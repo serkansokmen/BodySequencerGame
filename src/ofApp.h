@@ -7,10 +7,15 @@
 #include "MSATimer.h"
 
 
-#define COUNTDOWN   3
+#define COUNTDOWN           3
 
-#define COLUMNS     4
-#define ROWS        4
+#define COLUMNS             4
+#define ROWS                4
+
+#define SEQUENCER_WIDTH     600
+#define SEQUENCER_HEIGHT    600
+
+#define SCRUBBER_HEIGHT     8
 
 
 class ofApp : public ofBaseApp {
@@ -43,12 +48,14 @@ public:
     ofxCenteredTrueTypeFont font;
     
     ofParameter<float>  bpm;
+    ofParameter<bool>   bDrawBpmTapper;
     ofParameter<int>    currentStep;
     
     msa::BPMTapper      bpmTapper;
     msa::Timer          startTimer;
     
-    ofRectangle sequencerArea;
+    ofRectangle         sequencerArea;
+    ofPlanePrimitive    sequencerPlane;
 
     bool        bCountdownRunning;
     bool        bGameRunning;
