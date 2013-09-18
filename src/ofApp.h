@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
+#include "MSABPMTapper.h"
 
 
 class ofApp : public ofBaseApp{
@@ -19,6 +21,20 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
+    void exit();
     
+    void startGame();
+    void endGame();
     
+    void bpmChanged(float &newVal);
+    
+    ofxPanel    gui;
+    ofxButton   startGameButton, endGameButton;
+    
+    ofParameter<float>  bpm;
+    
+    msa::BPMTapper      bpmTapper;
+    
+    bool        bGameRunning;
+    bool        bHideGui;
 };
