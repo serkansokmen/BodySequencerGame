@@ -3,6 +3,10 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "MSABPMTapper.h"
+#include "MSATimer.h"
+
+
+#define COUNTDOWN   3
 
 
 class ofApp : public ofBaseApp{
@@ -23,18 +27,21 @@ public:
     void gotMessage(ofMessage msg);
     void exit();
     
+    void startCountdown();
     void startGame();
     void endGame();
     
     void bpmChanged(float &newVal);
     
     ofxPanel    gui;
-    ofxButton   startGameButton, endGameButton;
+    ofxButton   startCountdownButton, endGameButton;
     
     ofParameter<float>  bpm;
     
     msa::BPMTapper      bpmTapper;
-    
+    msa::Timer          startTimer;
+
+    bool        bCountdownRunning;
     bool        bGameRunning;
     bool        bHideGui;
 };

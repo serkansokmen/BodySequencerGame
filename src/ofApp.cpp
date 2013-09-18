@@ -10,27 +10,40 @@ void ofApp::setup(){
     
     gui.setup("Body Race");
     gui.add(bpm.set("Speed", 192, 40, 255));
-    gui.add(startGameButton.setup("Start Game"));
+    gui.add(startCountdownButton.setup("Start Game"));
     gui.add(endGameButton.setup("End Game"));
     gui.loadFromFile("settings.xml");
     bHideGui = false;
     
-    startGameButton.addListener(this, &ofApp::startGame);
+    startCountdownButton.addListener(this, &ofApp::startCountdown);
     endGameButton.addListener(this, &ofApp::endGame);
     bpm.addListener(this, &ofApp::bpmChanged);
     
+    bCountdownRunning = false;
     bGameRunning = false;
+    startTimer.stop();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    if (bGameRunning) bpmTapper.update();
+    
+    if (bCountdownRunning && !bGameRunning){
+        if (startTimer.getSeconds() < COUNTDOWN){
+            
+        } else {
+            startGame();
+        }
+    }
+    
+    if (bGameRunning){
+        bpmTapper.update();
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    if (bGameRunning){
+    if (bGameRunning && !bCountdownRunning){
         ofSetColor(ofColor::blueSteel);
         bpmTapper.draw(40, ofGetHeight() - 40, 10);
     }
@@ -86,22 +99,39 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 void ofApp::exit(){
     gui.saveToFile("settings.xml");
     
-    startGameButton.removeListener(this, &ofApp::startGame);
+    startCountdownButton.removeListener(this, &ofApp::startCountdown);
     endGameButton.removeListener(this, &ofApp::endGame);
     bpm.removeListener(this, &ofApp::bpmChanged);
 }
 
 //--------------------------------------------------------------
+void ofApp::startCountdown(){
+    
+    bGameRunning = false;
+    bCountdownRunning = true;
+    
+    startTimer.start();
+    
+    ofLog(OF_LOG_NOTICE, "Starting game in " + ofToString(COUNTDOWN) + " seconds");
+}
+
+//--------------------------------------------------------------
 void ofApp::startGame(){
-    ofLog(OF_LOG_NOTICE, "Start game");
-    bpmTapper.startFresh();
+    
     bGameRunning = true;
+    bCountdownRunning = false;
+    
+    startTimer.stop();
+    bpmTapper.startFresh();
+    
+    ofLog(OF_LOG_NOTICE, "Game started");
 }
 
 //--------------------------------------------------------------
 void ofApp::endGame(){
-    ofLog(OF_LOG_NOTICE, "End game");
     bGameRunning = false;
+    
+    ofLog(OF_LOG_NOTICE, "Game ended");
 }
 
 //--------------------------------------------------------------
