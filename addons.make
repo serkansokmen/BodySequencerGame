@@ -1,0 +1,7 @@
+ofxGui
+ofxOsc
+ofxCenteredTrueTypeFont
+ofxMSABPMTapper
+ofxMSATimer
+ofxTSPSReceiver
+ofxTweener
