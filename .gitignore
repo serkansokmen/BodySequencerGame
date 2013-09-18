@@ -83,5 +83,8 @@ Desktop.ini
 # Miscellaneous
 .mailmap
 
+# Photoshop files
+*.psd
+
 # Ignore settings file
 bin/data/settings.xml
