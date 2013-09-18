@@ -2,14 +2,18 @@
 
 #include "ofMain.h"
 #include "ofxGui.h"
+#include "ofxCenteredTrueTypeFont.h"
 #include "MSABPMTapper.h"
 #include "MSATimer.h"
 
 
 #define COUNTDOWN   3
 
+#define COLUMNS     4
+#define ROWS        4
 
-class ofApp : public ofBaseApp{
+
+class ofApp : public ofBaseApp {
     
 public:
     void setup();
@@ -36,10 +40,15 @@ public:
     ofxPanel    gui;
     ofxButton   startCountdownButton, endGameButton;
     
+    ofxCenteredTrueTypeFont font;
+    
     ofParameter<float>  bpm;
+    ofParameter<int>    currentStep;
     
     msa::BPMTapper      bpmTapper;
     msa::Timer          startTimer;
+    
+    ofRectangle sequencerArea;
 
     bool        bCountdownRunning;
     bool        bGameRunning;

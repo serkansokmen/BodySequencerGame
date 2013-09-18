@@ -7,6 +7,9 @@ void ofApp::setup(){
     ofBackground(ofColor::black);
     ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetWindowTitle("Body Race");
+    ofSetCircleResolution(100);
+    
+    font.loadFont("type/verdana.ttf", 120);
     
     gui.setup("Body Race");
     gui.add(bpm.set("Speed", 192, 40, 255));
@@ -22,21 +25,21 @@ void ofApp::setup(){
     bCountdownRunning = false;
     bGameRunning = false;
     startTimer.stop();
+    
+    sequencerArea.setFromCenter(ofGetWidth()*.5, ofGetHeight()*.5, 800, 800);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    if (bCountdownRunning && !bGameRunning){
-        if (startTimer.getSeconds() < COUNTDOWN){
-            
-        } else {
-            startGame();
-        }
+    if (bCountdownRunning && !bGameRunning && startTimer.getSeconds() >= COUNTDOWN){
+        startGame();
     }
     
     if (bGameRunning){
         bpmTapper.update();
+        
+        currentStep = (int)bpmTapper.beatTime() % COLUMNS;
     }
 }
 
@@ -44,15 +47,38 @@ void ofApp::update(){
 void ofApp::draw(){
     
     if (bGameRunning && !bCountdownRunning){
-        ofSetColor(ofColor::blueSteel);
+        ofPushStyle();
+        ofSetColor(ofColor::greenYellow);
         bpmTapper.draw(40, ofGetHeight() - 40, 10);
+        ofPopStyle();
+    } else {
+        if (bCountdownRunning){
+            ofPushMatrix();
+            ofPushStyle();
+            ofTranslate(ofGetWidth()*.5, ofGetHeight()*.5);
+            ofSetColor(ofColor::greenYellow);
+            ofCircle(0, 0, 240);
+            ofSetColor(ofColor::whiteSmoke);
+            ofCircle(0, 0, 200);
+            ofSetColor(ofColor::grey);
+            font.drawStringCentered(ofToString(COUNTDOWN - (int)startTimer.getSeconds()), 0, 0);
+            ofPopStyle();
+            ofPopMatrix();
+        }
     }
+    
     if (!bHideGui) gui.draw();
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
+    switch (key) {
+        case 's':
+            bHideGui = !bHideGui;
+            break;
+        default:
+        break;
+    }
 }
 
 //--------------------------------------------------------------
