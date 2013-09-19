@@ -56,6 +56,13 @@ public:
     
     ofRectangle         sequencerArea;
     ofPlanePrimitive    sequencerPlane;
+    ofShader            sequencerShader;
+    ofParameter<bool>   bDrawWireframe;
+    ofParameter<bool>   bDrawVertices;
+    ofParameter<bool>   bDrawFaces;
+    ofImage             gridAlphaMask;
+    
+    int         currentPattern[COLUMNS*ROWS];
 
     bool        bCountdownRunning;
     bool        bGameRunning;
