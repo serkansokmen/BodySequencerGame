@@ -33,13 +33,12 @@ void ofApp::setup(){
     bGameRunning = false;
     startTimer.stop();
     
+    gridTextureImg.loadImage("images/grid_texture.png");
     gridAlphaMask.loadImage("images/grid_mask.png");
     
     sequencerArea.setFromCenter(ofGetWidth()*.5, ofGetHeight()*.5, SEQUENCER_WIDTH, SEQUENCER_HEIGHT);
-    sequencerPlane.set(SEQUENCER_WIDTH, SEQUENCER_HEIGHT, COLUMNS * 8, ROWS * 8, OF_PRIMITIVE_TRIANGLES);
-    sequencerPlane.mapTexCoords(0, 0, gridAlphaMask.getWidth(), gridAlphaMask.getHeight());
-    ofVec4f tcoords = sequencerPlane.getTexCoords();
-    sequencerPlane.mapTexCoords(tcoords.x, tcoords.y, tcoords.z, tcoords.w);
+    sequencerPlane.set(SEQUENCER_WIDTH, SEQUENCER_HEIGHT, COLUMNS * 16, ROWS * 16, OF_PRIMITIVE_TRIANGLES);
+    sequencerPlane.mapTexCoordsFromTexture(gridTextureImg.getTextureReference());
     
 #ifdef TARGET_OPENGLES
 	sequencerShader.load("shaders/ES2/shader");
@@ -92,17 +91,14 @@ void ofApp::draw(){
         ofPopMatrix();
         
         
-        gridAlphaMask.getTextureReference().bind();
+        gridTextureImg.getTextureReference().bind();
         sequencerShader.begin();
-        
         ofPushMatrix();
+        
 //        sequencerShader.setUniform2f("scrubberPosition", ofNormalize(currentStep, 0, COLUMNS), ofNormalize(currentStep+1, 0, COLUMNS));
-        float mousePosition = ofMap(mouseX, 0, ofGetWidth(), 1.0, -1.0, true);
-#ifndef TARGET_OPENGLES
-        mousePosition *= sequencerPlane.getWidth();
-#endif
-
-        sequencerShader.setUniform1f("mouseX", mousePosition);
+        sequencerShader.setUniformTexture("gridTexture", gridTextureImg, 0);
+        sequencerShader.setUniformTexture("gridAlpha", gridAlphaMask, 1);
+        sequencerShader.setUniform1i("currentStep", currentStep);
         
         ofTranslate(sequencerArea.getCenter());
         
@@ -113,9 +109,8 @@ void ofApp::draw(){
         if (bDrawVertices)
             sequencerPlane.drawVertices();
         
-        sequencerShader.end();
         ofPopMatrix();
-        gridAlphaMask.getTextureReference().unbind();
+        sequencerShader.end();
         
         if (bDrawBpmTapper) {
             bpmTapper.draw(40, ofGetHeight() - 40, 10);

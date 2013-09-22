@@ -2,6 +2,7 @@
 #include "ofApp.h"
 #include "ofGlProgrammableRenderer.h"
 
+
 //========================================================================
 int main(){
 	ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
