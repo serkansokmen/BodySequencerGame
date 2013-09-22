@@ -5,15 +5,17 @@
 #include "ofxCenteredTrueTypeFont.h"
 #include "MSABPMTapper.h"
 #include "MSATimer.h"
+#include "SequencerTheme.h"
 
 
 #define COUNTDOWN           3
+#define COUNTDOWN_RADIUS    180
 
 #define COLUMNS             4
 #define ROWS                4
 
-#define SEQUENCER_WIDTH     600
-#define SEQUENCER_HEIGHT    600
+#define SEQUENCER_MAX_WIDTH     800
+#define SEQUENCER_MAX_HEIGHT    800
 
 #define SCRUBBER_HEIGHT     8
 
@@ -46,6 +48,8 @@ public:
     void sequencerWidthChanged(float &newWidth);
     void sequencerHeightChanged(float &newHeight);
     
+    void currentThemeIdChanged(int &newId);
+    
     
     ofxPanel    gui;
     ofxButton   startCountdownButton, endGameButton;
@@ -63,6 +67,10 @@ public:
     ofParameter<ofVec2f>    seqPos;
     ofParameter<float>      seqWidth;
     ofParameter<float>      seqHeight;
+    
+    ofParameter<int>        currentThemeId;
+    SequencerTheme          *currentTheme;
+    vector<SequencerTheme>  themes;
     
     int         currentPattern[COLUMNS*ROWS];
 

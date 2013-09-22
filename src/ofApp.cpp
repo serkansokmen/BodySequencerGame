@@ -12,25 +12,45 @@ void ofApp::setup(){
     
     font.loadFont("type/verdana.ttf", 120);
     
+    // Setup themes
+    currentTheme = new SequencerTheme();
+    
+    // Initialize themes
+    themes.clear();
+    
+    SequencerTheme    theme0, theme1;
+    
+    theme0.setup("themes/pack_1/sounds/", "themes/pack_1/images/interface.png");
+    theme1.setup("themes/pack_2/sounds/", "themes/pack_2/images/interface.png");
+    
+    themes.push_back(theme0);
+    themes.push_back(theme1);
+    
+    currentThemeId = 0;
+    
+    
+    
     gui.setup("Body Race");
     gui.add(bpm.set("Speed", 192, 40, 255));
     gui.add(bDrawBpmTapper.set("Draw BPM Tapper", true));
     gui.add(startCountdownButton.setup("Start Game"));
     gui.add(endGameButton.setup("End Game"));
     gui.add(seqPos.set("Sequencer Position",
-                       ofVec2f((ofGetWidth() - SEQUENCER_WIDTH)*.5, (ofGetHeight()- SEQUENCER_HEIGHT)*.5),
+                       ofVec2f((ofGetWidth() - SEQUENCER_MAX_WIDTH)*.5, (ofGetHeight() - SEQUENCER_MAX_HEIGHT)*.5),
                        ofVec2f(0, 0),
-                       ofVec2f((ofGetWidth() - SEQUENCER_WIDTH), (ofGetHeight()- SEQUENCER_HEIGHT))));
-    gui.add(seqWidth.set("Sequencer Width", SEQUENCER_WIDTH, 0, SEQUENCER_WIDTH));
-    gui.add(seqHeight.set("Sequencer Height", SEQUENCER_HEIGHT, 0, SEQUENCER_HEIGHT));
+                       ofVec2f(ofGetWidth(), ofGetHeight())));
+    gui.add(seqWidth.set("Sequencer Width", SEQUENCER_MAX_WIDTH, 0, SEQUENCER_MAX_WIDTH));
+    gui.add(seqHeight.set("Sequencer Height", SEQUENCER_MAX_HEIGHT, 0, SEQUENCER_MAX_HEIGHT));
+    gui.add(currentThemeId.set("Current Theme", 0, 0, themes.size() - 1));
     
     startCountdownButton.addListener(this, &ofApp::startCountdown);
     endGameButton.addListener(this, &ofApp::endGame);
     bpm.addListener(this, &ofApp::bpmChanged);
-    
     seqPos.addListener(this, &ofApp::sequencerPositionChanged);
     seqWidth.addListener(this, &ofApp::sequencerWidthChanged);
     seqHeight.addListener(this, &ofApp::sequencerHeightChanged);
+    currentThemeId.addListener(this, &ofApp::currentThemeIdChanged);
+    
     
     gui.loadFromFile("settings.xml");
     bHideGui = false;
@@ -59,11 +79,16 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
+    // Draw background
+    currentTheme->background.draw(0, 0, ofGetWidth(), ofGetHeight());
+    
+    
     if (bGameRunning && !bCountdownRunning){
         
         // Draw scrubbers
-        ofSetColor(ofColor::greenYellow);
         ofPushMatrix();
+        ofPushStyle();
+        ofSetColor(ofColor::greenYellow);
         ofTranslate(sequencerArea.getTopLeft());
         ofRect(currentStep*sequencerArea.getWidth()/COLUMNS,
                -SCRUBBER_HEIGHT*2,
@@ -73,6 +98,7 @@ void ofApp::draw(){
                sequencerArea.getHeight()+SCRUBBER_HEIGHT,
                sequencerArea.getWidth()/COLUMNS,
                SCRUBBER_HEIGHT);
+        ofPopStyle();
         ofPopMatrix();
         
         // Draw sqeuencer
@@ -110,9 +136,9 @@ void ofApp::draw(){
             ofPushStyle();
             ofTranslate(ofGetWidth()*.5, ofGetHeight()*.5);
             ofSetColor(ofColor::greenYellow);
-            ofCircle(0, 0, 240);
+            ofCircle(0, 0, COUNTDOWN_RADIUS * 1.2);
             ofSetColor(ofColor::whiteSmoke);
-            ofCircle(0, 0, 200);
+            ofCircle(0, 0, COUNTDOWN_RADIUS);
             ofSetColor(ofColor::grey);
             font.drawStringCentered(ofToString(COUNTDOWN - (int)startTimer.getSeconds()), 0, 0);
             ofPopStyle();
@@ -193,6 +219,8 @@ void ofApp::exit(){
     seqPos.removeListener(this, &ofApp::sequencerPositionChanged);
     seqWidth.removeListener(this, &ofApp::sequencerWidthChanged);
     seqHeight.removeListener(this, &ofApp::sequencerHeightChanged);
+    
+    currentThemeId.removeListener(this, &ofApp::currentThemeIdChanged);
 }
 
 //--------------------------------------------------------------
@@ -245,3 +273,9 @@ void ofApp::sequencerHeightChanged(float &newHeight){
     sequencerArea.setHeight(newHeight);
 }
 
+//--------------------------------------------------------------
+void ofApp::currentThemeIdChanged(int &newId){
+    
+    currentTheme = &themes[newId];
+
+}
