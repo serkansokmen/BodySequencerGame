@@ -42,6 +42,11 @@ public:
     
     void bpmChanged(float &newVal);
     
+    void sequencerPositionChanged(ofVec2f &newPos);
+    void sequencerWidthChanged(float &newWidth);
+    void sequencerHeightChanged(float &newHeight);
+    
+    
     ofxPanel    gui;
     ofxButton   startCountdownButton, endGameButton;
     
@@ -54,6 +59,10 @@ public:
     msa::BPMTapper      bpmTapper;
     msa::Timer          startTimer;
     
+    ofRectangle             sequencerArea;
+    ofParameter<ofVec2f>    seqPos;
+    ofParameter<float>      seqWidth;
+    ofParameter<float>      seqHeight;
     
     int         currentPattern[COLUMNS*ROWS];
 

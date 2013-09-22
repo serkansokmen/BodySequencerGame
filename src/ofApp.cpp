@@ -17,19 +17,35 @@ void ofApp::setup(){
     gui.add(bDrawBpmTapper.set("Draw BPM Tapper", true));
     gui.add(startCountdownButton.setup("Start Game"));
     gui.add(endGameButton.setup("End Game"));
-    gui.loadFromFile("settings.xml");
-    bHideGui = false;
+//    gui.add(sequencerArea.set("Sequencer Area",
+//                              ofRectangle((ofGetWidth() - SEQUENCER_WIDTH)*.5,
+//                                          (ofGetHeight()- SEQUENCER_HEIGHT)*.5,
+//                                          SEQUENCER_WIDTH, SEQUENCER_HEIGHT)));
+    ofxLabel seqLabel;
+//    gui.add(seqLabel.setup("Sequencer", ""));
+    gui.add(seqPos.set("Sequencer Position",
+                       ofVec2f((ofGetWidth() - SEQUENCER_WIDTH)*.5, (ofGetHeight()- SEQUENCER_HEIGHT)*.5),
+                       ofVec2f(0, 0),
+                       ofVec2f((ofGetWidth() - SEQUENCER_WIDTH), (ofGetHeight()- SEQUENCER_HEIGHT))));
+    gui.add(seqWidth.set("Sequencer Width", SEQUENCER_WIDTH, 0, SEQUENCER_WIDTH));
+    gui.add(seqHeight.set("Sequencer Height", SEQUENCER_HEIGHT, 0, SEQUENCER_HEIGHT));
     
     startCountdownButton.addListener(this, &ofApp::startCountdown);
     endGameButton.addListener(this, &ofApp::endGame);
     bpm.addListener(this, &ofApp::bpmChanged);
     
+    seqPos.addListener(this, &ofApp::sequencerPositionChanged);
+    seqWidth.addListener(this, &ofApp::sequencerWidthChanged);
+    seqHeight.addListener(this, &ofApp::sequencerHeightChanged);
+    
+    gui.loadFromFile("settings.xml");
+    bHideGui = false;
+    
+    bpmTapper.setBpm(bpm);
+    
     bCountdownRunning = false;
     bGameRunning = false;
     startTimer.stop();
-    
-    
-    
 }
 
 //--------------------------------------------------------------
@@ -51,12 +67,6 @@ void ofApp::draw(){
     
     if (bGameRunning && !bCountdownRunning){
         
-//        for (int j=0; j<COLUMNS; j++) {
-//            for (int i=0; i<ROWS; i++) {
-//                int gridIndex = i + j * COLUMNS;
-//            }
-//        }
-        
         // Draw scrubbers
         ofSetColor(ofColor::greenYellow);
         ofPushMatrix();
@@ -73,6 +83,26 @@ void ofApp::draw(){
         
         // Draw sqeuencer
         ofPushMatrix();
+        ofTranslate(sequencerArea.getTopLeft());
+        for (int j=0; j<COLUMNS; j++) {
+            for (int i=0; i<ROWS; i++) {
+                int gridIndex = i + j * COLUMNS;
+                
+                float cw = sequencerArea.getWidth()/COLUMNS;
+                float ch = sequencerArea.getHeight()/ROWS;
+                float cx = i * cw;
+                float cy = j * ch;
+                
+                ofRectangle cellRect(cx, cy, cw, ch);
+                
+                ofPushStyle();
+                ofSetColor(ofColor::blueSteel);
+                ofNoFill();
+                ofRect(cellRect);
+                ofPopStyle();
+                
+            }
+        }
         ofPopMatrix();
         
         if (bDrawBpmTapper) {
@@ -165,6 +195,10 @@ void ofApp::exit(){
     startCountdownButton.removeListener(this, &ofApp::startCountdown);
     endGameButton.removeListener(this, &ofApp::endGame);
     bpm.removeListener(this, &ofApp::bpmChanged);
+    
+    seqPos.removeListener(this, &ofApp::sequencerPositionChanged);
+    seqWidth.removeListener(this, &ofApp::sequencerWidthChanged);
+    seqHeight.removeListener(this, &ofApp::sequencerHeightChanged);
 }
 
 //--------------------------------------------------------------
@@ -201,3 +235,19 @@ void ofApp::endGame(){
 void ofApp::bpmChanged(float &newVal){
     bpmTapper.setBpm(newVal);
 }
+
+//--------------------------------------------------------------
+void ofApp::sequencerPositionChanged(ofVec2f &newPos){
+    sequencerArea.setPosition(newPos);
+}
+
+//--------------------------------------------------------------
+void ofApp::sequencerWidthChanged(float &newWidth){
+    sequencerArea.setWidth(newWidth);
+}
+
+//--------------------------------------------------------------
+void ofApp::sequencerHeightChanged(float &newHeight){
+    sequencerArea.setHeight(newHeight);
+}
+
