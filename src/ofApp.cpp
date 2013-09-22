@@ -7,7 +7,7 @@ void ofApp::setup(){
     ofSetFrameRate(60);
     ofBackground(ofColor::black);
     ofSetLogLevel(OF_LOG_VERBOSE);
-    ofSetWindowTitle("Body Race");
+    ofSetWindowTitle("Body Sequencer");
     ofSetCircleResolution(100);
     
     font.loadFont("type/verdana.ttf", 120);
@@ -30,7 +30,7 @@ void ofApp::setup(){
     
     
     
-    gui.setup("Body Race");
+    gui.setup("Body Sequencer");
     gui.add(bpm.set("Speed", 192, 40, 255));
     gui.add(bDrawBpmTapper.set("Draw BPM Tapper", true));
     gui.add(startCountdownButton.setup("Start Game"));
@@ -126,7 +126,7 @@ void ofApp::draw(){
         ofPopMatrix();
         
         if (bDrawBpmTapper) {
-            bpmTapper.draw(40, ofGetHeight() - 40, 10);
+            bpmTapper.draw(ofGetWidth() - 120, 20, 5);
         }
         
     } else {
