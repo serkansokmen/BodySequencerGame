@@ -98,12 +98,6 @@
 		17E65988300FBD9AAA2CD0CA /* ofxGui.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxGui.h; path = ../../../addons/ofxGui/src/ofxGui.h; sourceTree = SOURCE_ROOT; };
 		193B78FC56A59A581D17A40B /* ofxTweener.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxTweener.h; path = ../../../addons/ofxTweener/src/ofxTweener.h; sourceTree = SOURCE_ROOT; };
 		1C0DA2561397A7DE0246858B /* ofxGuiGroup.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxGuiGroup.h; path = ../../../addons/ofxGui/src/ofxGuiGroup.h; sourceTree = SOURCE_ROOT; };
-		208C452017EB4F4A00351861 /* shader.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = shader.frag; sourceTree = "<group>"; };
-		208C452117EB4F4A00351861 /* shader.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = shader.vert; sourceTree = "<group>"; };
-		208C452317EB4F4A00351861 /* shader.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = shader.frag; sourceTree = "<group>"; };
-		208C452417EB4F4A00351861 /* shader.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = shader.vert; sourceTree = "<group>"; };
-		208C452617EB4F4A00351861 /* shader.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = shader.frag; sourceTree = "<group>"; };
-		208C452717EB4F4A00351861 /* shader.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = shader.vert; sourceTree = "<group>"; };
 		20F35AFADAF0068B067E713F /* OscReceivedElements.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = OscReceivedElements.h; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscReceivedElements.h; sourceTree = SOURCE_ROOT; };
 		23640F57DF6C4BB6BFC5DA4C /* PacketListener.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = PacketListener.h; path = ../../../addons/ofxOsc/libs/oscpack/src/ip/PacketListener.h; sourceTree = SOURCE_ROOT; };
 		2834D88A62CD23F3DE2C47D1 /* ofxButton.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxButton.h; path = ../../../addons/ofxGui/src/ofxButton.h; sourceTree = SOURCE_ROOT; };
@@ -230,44 +224,6 @@
 				ABDAFDB1F629411443294761 /* src */,
 			);
 			name = ofxTweener;
-			sourceTree = "<group>";
-		};
-		208C451E17EB4F4A00351861 /* shaders */ = {
-			isa = PBXGroup;
-			children = (
-				208C451F17EB4F4A00351861 /* ES2 */,
-				208C452217EB4F4A00351861 /* GL2 */,
-				208C452517EB4F4A00351861 /* GL3 */,
-			);
-			name = shaders;
-			path = bin/data/shaders;
-			sourceTree = "<group>";
-		};
-		208C451F17EB4F4A00351861 /* ES2 */ = {
-			isa = PBXGroup;
-			children = (
-				208C452017EB4F4A00351861 /* shader.frag */,
-				208C452117EB4F4A00351861 /* shader.vert */,
-			);
-			path = ES2;
-			sourceTree = "<group>";
-		};
-		208C452217EB4F4A00351861 /* GL2 */ = {
-			isa = PBXGroup;
-			children = (
-				208C452317EB4F4A00351861 /* shader.frag */,
-				208C452417EB4F4A00351861 /* shader.vert */,
-			);
-			path = GL2;
-			sourceTree = "<group>";
-		};
-		208C452517EB4F4A00351861 /* GL3 */ = {
-			isa = PBXGroup;
-			children = (
-				208C452617EB4F4A00351861 /* shader.frag */,
-				208C452717EB4F4A00351861 /* shader.vert */,
-			);
-			path = GL3;
 			sourceTree = "<group>";
 		};
 		30CB364908817057B430D528 /* osc */ = {
@@ -522,7 +478,6 @@
 		E4B69B4A0A3A1720003C02F2 = {
 			isa = PBXGroup;
 			children = (
-				208C451E17EB4F4A00351861 /* shaders */,
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
 				E4B69E1C0A3A1BDC003C02F2 /* src */,

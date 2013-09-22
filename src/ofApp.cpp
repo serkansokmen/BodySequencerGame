@@ -17,11 +17,6 @@ void ofApp::setup(){
     gui.add(bDrawBpmTapper.set("Draw BPM Tapper", true));
     gui.add(startCountdownButton.setup("Start Game"));
     gui.add(endGameButton.setup("End Game"));
-    
-    gui.add(bDrawFaces.set("Draw Faces", true));
-    gui.add(bDrawWireframe.set("Draw Wireframe", true));
-    gui.add(bDrawVertices.set("Draw Vertices", true));
-    
     gui.loadFromFile("settings.xml");
     bHideGui = false;
     
@@ -33,22 +28,8 @@ void ofApp::setup(){
     bGameRunning = false;
     startTimer.stop();
     
-    gridTextureImg.loadImage("images/grid_texture.png");
-    gridAlphaMask.loadImage("images/grid_mask.png");
     
-    sequencerArea.setFromCenter(ofGetWidth()*.5, ofGetHeight()*.5, SEQUENCER_WIDTH, SEQUENCER_HEIGHT);
-    sequencerPlane.set(SEQUENCER_WIDTH, SEQUENCER_HEIGHT, COLUMNS * 16, ROWS * 16, OF_PRIMITIVE_TRIANGLES);
-    sequencerPlane.mapTexCoordsFromTexture(gridTextureImg.getTextureReference());
     
-#ifdef TARGET_OPENGLES
-	sequencerShader.load("shaders/ES2/shader");
-#else
-	if(ofIsGLProgrammableRenderer()){
-		sequencerShader.load("shaders/GL3/shader");
-	}else{
-		sequencerShader.load("shaders/GL2/shader");
-	}
-#endif
 }
 
 //--------------------------------------------------------------
@@ -90,27 +71,9 @@ void ofApp::draw(){
                SCRUBBER_HEIGHT);
         ofPopMatrix();
         
-        
-        gridTextureImg.getTextureReference().bind();
-        sequencerShader.begin();
+        // Draw sqeuencer
         ofPushMatrix();
-        
-//        sequencerShader.setUniform2f("scrubberPosition", ofNormalize(currentStep, 0, COLUMNS), ofNormalize(currentStep+1, 0, COLUMNS));
-        sequencerShader.setUniformTexture("gridTexture", gridTextureImg, 0);
-        sequencerShader.setUniformTexture("gridAlpha", gridAlphaMask, 1);
-        sequencerShader.setUniform1i("currentStep", currentStep);
-        
-        ofTranslate(sequencerArea.getCenter());
-        
-        if (bDrawFaces)
-            sequencerPlane.drawFaces();
-        if (bDrawWireframe)
-            sequencerPlane.drawWireframe();
-        if (bDrawVertices)
-            sequencerPlane.drawVertices();
-        
         ofPopMatrix();
-        sequencerShader.end();
         
         if (bDrawBpmTapper) {
             bpmTapper.draw(40, ofGetHeight() - 40, 10);
@@ -182,7 +145,7 @@ void ofApp::mouseReleased(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-    sequencerArea.setFromCenter(ofGetWidth()*.5, ofGetHeight()*.5, SEQUENCER_WIDTH, SEQUENCER_HEIGHT);
+    
 }
 
 //--------------------------------------------------------------

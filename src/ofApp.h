@@ -54,14 +54,6 @@ public:
     msa::BPMTapper      bpmTapper;
     msa::Timer          startTimer;
     
-    ofRectangle         sequencerArea;
-    ofPlanePrimitive    sequencerPlane;
-    ofShader            sequencerShader;
-    ofParameter<bool>   bDrawWireframe;
-    ofParameter<bool>   bDrawVertices;
-    ofParameter<bool>   bDrawFaces;
-    ofImage             gridTextureImg;
-    ofImage             gridAlphaMask;
     
     int         currentPattern[COLUMNS*ROWS];
 
