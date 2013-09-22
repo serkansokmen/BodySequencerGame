@@ -17,12 +17,6 @@ void ofApp::setup(){
     gui.add(bDrawBpmTapper.set("Draw BPM Tapper", true));
     gui.add(startCountdownButton.setup("Start Game"));
     gui.add(endGameButton.setup("End Game"));
-//    gui.add(sequencerArea.set("Sequencer Area",
-//                              ofRectangle((ofGetWidth() - SEQUENCER_WIDTH)*.5,
-//                                          (ofGetHeight()- SEQUENCER_HEIGHT)*.5,
-//                                          SEQUENCER_WIDTH, SEQUENCER_HEIGHT)));
-    ofxLabel seqLabel;
-//    gui.add(seqLabel.setup("Sequencer", ""));
     gui.add(seqPos.set("Sequencer Position",
                        ofVec2f((ofGetWidth() - SEQUENCER_WIDTH)*.5, (ofGetHeight()- SEQUENCER_HEIGHT)*.5),
                        ofVec2f(0, 0),
