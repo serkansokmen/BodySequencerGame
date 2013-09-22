@@ -3,5 +3,6 @@ ofxOsc
 ofxCenteredTrueTypeFont
 ofxMSABPMTapper
 ofxMSATimer
+ofxPostProcessing
 ofxTSPSReceiver
 ofxTweener

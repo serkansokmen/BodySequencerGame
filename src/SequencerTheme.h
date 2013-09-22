@@ -17,6 +17,7 @@ class SequencerTheme {
 public:
     
     void setup(string soundPath, string bgPath);
+    void draw();
     
     string      soundPath;
     ofImage     background;

@@ -8,6 +8,7 @@ void ofApp::setup(){
     ofBackground(ofColor::black);
     ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetWindowTitle("Body Sequencer");
+    ofSetCoordHandedness(OF_RIGHT_HANDED);
     ofSetCircleResolution(100);
     
     font.loadFont("type/verdana.ttf", 120);
@@ -18,7 +19,7 @@ void ofApp::setup(){
     // Initialize themes
     themes.clear();
     
-    SequencerTheme    theme0, theme1;
+    SequencerTheme theme0, theme1;
     
     theme0.setup("themes/pack_1/sounds/", "themes/pack_1/images/interface.png");
     theme1.setup("themes/pack_2/sounds/", "themes/pack_2/images/interface.png");
@@ -27,7 +28,6 @@ void ofApp::setup(){
     themes.push_back(theme1);
     
     currentThemeId = 0;
-    
     
     
     gui.setup("Body Sequencer");
@@ -72,7 +72,20 @@ void ofApp::update(){
     if (bGameRunning){
         bpmTapper.update();
         
-        currentStep = (int)bpmTapper.beatTime() % COLUMNS;
+        int currentRound = (int)bpmTapper.beatTime();
+        currentStep = currentRound % COLUMNS;
+        cout << "Current Round: " << currentRound << endl;
+        
+        if (currentRound < LEVEL_0_ROUNDS*COLUMNS)
+            cout << "EASY" << endl;
+        else if (currentRound >= LEVEL_0_ROUNDS*COLUMNS &&
+                 currentRound < (LEVEL_0_ROUNDS+LEVEL_1_ROUNDS)*COLUMNS)
+            cout << "MEDIUM" << endl;
+        else if (currentRound >= (LEVEL_0_ROUNDS+LEVEL_1_ROUNDS)*COLUMNS &&
+                 currentRound < (LEVEL_0_ROUNDS+LEVEL_1_ROUNDS+LEVEL_2_ROUNDS)*COLUMNS)
+            cout << "HARD" << endl;
+        else
+            endGame();
     }
 }
 
@@ -80,7 +93,7 @@ void ofApp::update(){
 void ofApp::draw(){
     
     // Draw background
-    currentTheme->background.draw(0, 0, ofGetWidth(), ofGetHeight());
+    currentTheme->draw();
     
     
     if (bGameRunning && !bCountdownRunning){
@@ -91,11 +104,11 @@ void ofApp::draw(){
         ofSetColor(ofColor::greenYellow);
         ofTranslate(sequencerArea.getTopLeft());
         ofRect(currentStep*sequencerArea.getWidth()/COLUMNS,
-               -SCRUBBER_HEIGHT*2,
+               -SCRUBBER_HEIGHT,
                sequencerArea.getWidth()/COLUMNS,
                SCRUBBER_HEIGHT);
         ofRect(currentStep*sequencerArea.getWidth()/COLUMNS,
-               sequencerArea.getHeight()+SCRUBBER_HEIGHT,
+               sequencerArea.getHeight(),
                sequencerArea.getWidth()/COLUMNS,
                SCRUBBER_HEIGHT);
         ofPopStyle();

@@ -29,3 +29,9 @@ void SequencerTheme::setup(string soundPath, string bgPath){
         }
     }
 }
+
+void SequencerTheme::draw(){
+    
+    background.draw(0, 0, ofGetWidth(), ofGetHeight());
+    
+}

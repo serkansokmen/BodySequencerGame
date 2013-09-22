@@ -8,16 +8,21 @@
 #include "SequencerTheme.h"
 
 
-#define COUNTDOWN           3
-#define COUNTDOWN_RADIUS    180
+#define COUNTDOWN               3
+#define COUNTDOWN_RADIUS        180
 
-#define COLUMNS             4
-#define ROWS                4
+#define COLUMNS                 4
+#define ROWS                    4
 
 #define SEQUENCER_MAX_WIDTH     800
 #define SEQUENCER_MAX_HEIGHT    800
 
-#define SCRUBBER_HEIGHT     8
+#define SCRUBBER_HEIGHT         8
+
+#define LEVEL_0_ROUNDS          2
+#define LEVEL_1_ROUNDS          1
+#define LEVEL_2_ROUNDS          1
+
 
 
 class ofApp : public ofBaseApp {
@@ -51,17 +56,17 @@ public:
     void currentThemeIdChanged(int &newId);
     
     
-    ofxPanel    gui;
-    ofxButton   startCountdownButton, endGameButton;
+    ofxPanel                gui;
+    ofxButton               startCountdownButton, endGameButton;
     
     ofxCenteredTrueTypeFont font;
     
-    ofParameter<float>  bpm;
-    ofParameter<bool>   bDrawBpmTapper;
-    ofParameter<int>    currentStep;
+    ofParameter<float>      bpm;
+    ofParameter<bool>       bDrawBpmTapper;
+    ofParameter<int>        currentStep;
     
-    msa::BPMTapper      bpmTapper;
-    msa::Timer          startTimer;
+    msa::BPMTapper          bpmTapper;
+    msa::Timer              startTimer;
     
     ofRectangle             sequencerArea;
     ofParameter<ofVec2f>    seqPos;
@@ -71,10 +76,8 @@ public:
     ofParameter<int>        currentThemeId;
     SequencerTheme          *currentTheme;
     vector<SequencerTheme>  themes;
-    
-    int         currentPattern[COLUMNS*ROWS];
 
-    bool        bCountdownRunning;
-    bool        bGameRunning;
-    bool        bHideGui;
+    bool                    bCountdownRunning;
+    bool                    bGameRunning;
+    bool                    bHideGui;
 };
