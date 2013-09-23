@@ -9,11 +9,13 @@
 #include "SequencerTheme.h"
 
 
-void SequencerTheme::setup(string soundPath, string bgPath){
+void SequencerTheme::setup(string soundPath, string bgPath, string interfaceImagePath){
     
     this->soundPath = soundPath;
     
     background.loadImage(bgPath);
+    interface.loadImage(interfaceImagePath);
+    splashImage.loadImage("images/splash.png");
     
     // Sound
     ofDirectory dir;
@@ -30,8 +32,19 @@ void SequencerTheme::setup(string soundPath, string bgPath){
     }
 }
 
-void SequencerTheme::draw(){
+void SequencerTheme::draw(bool bShowSplash){
     
-    background.draw(0, 0, ofGetWidth(), ofGetHeight());
+    if (bShowSplash){
+        background.draw(0, 0, ofGetWidth(), ofGetHeight());
+        ofPushMatrix();
+        ofTranslate((background.getWidth()-splashImage.getWidth())*.5, (background.getHeight()-splashImage.getHeight())*.5 + 40);
+        ofSetRectMode(OF_RECTMODE_CENTER);
+        ofSetColor(ofColor::white);
+        splashImage.draw(0, 0);
+        ofSetRectMode(OF_RECTMODE_CORNER);
+        ofPopMatrix();
+    } else {
+        interface.draw(0, 0, ofGetWidth(), ofGetHeight());
+    }
     
 }

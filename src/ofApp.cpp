@@ -21,8 +21,8 @@ void ofApp::setup(){
     
     SequencerTheme theme0, theme1;
     
-    theme0.setup("themes/pack_1/sounds/", "themes/pack_1/images/interface.png");
-    theme1.setup("themes/pack_2/sounds/", "themes/pack_2/images/interface.png");
+    theme0.setup("themes/pack_1/sounds/", "themes/pack_1/images/background.png", "themes/pack_1/images/interface.png");
+    theme1.setup("themes/pack_2/sounds/", "themes/pack_2/images/background.png", "themes/pack_2/images/interface.png");
     
     themes.push_back(theme0);
     themes.push_back(theme1);
@@ -36,7 +36,8 @@ void ofApp::setup(){
     gui.add(startCountdownButton.setup("Start Game"));
     gui.add(endGameButton.setup("End Game"));
     gui.add(seqPos.set("Sequencer Position",
-                       ofVec2f((ofGetWidth() - SEQUENCER_MAX_WIDTH)*.5, (ofGetHeight() - SEQUENCER_MAX_HEIGHT)*.5),
+                       ofVec2f((ofGetWidth() - SEQUENCER_MAX_WIDTH)*.5,
+                               (ofGetHeight() - SEQUENCER_MAX_HEIGHT)*.5),
                        ofVec2f(0, 0),
                        ofVec2f(ofGetWidth(), ofGetHeight())));
     gui.add(seqWidth.set("Sequencer Width", SEQUENCER_MAX_WIDTH, 0, SEQUENCER_MAX_WIDTH));
@@ -65,6 +66,8 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
+    Tweener.update();
+    
     if (bCountdownRunning && !bGameRunning && startTimer.getSeconds() >= COUNTDOWN){
         startGame();
     }
@@ -74,27 +77,30 @@ void ofApp::update(){
         
         int currentRound = (int)bpmTapper.beatTime();
         currentStep = currentRound % COLUMNS;
-        cout << "Current Round: " << currentRound << endl;
         
-        if (currentRound < LEVEL_0_ROUNDS*COLUMNS)
-            cout << "EASY" << endl;
+        if (currentRound < LEVEL_0_ROUNDS*COLUMNS){
+            ofLog(OF_LOG_NOTICE, "LEVEL: EASY");
+        }
+        
         else if (currentRound >= LEVEL_0_ROUNDS*COLUMNS &&
-                 currentRound < (LEVEL_0_ROUNDS+LEVEL_1_ROUNDS)*COLUMNS)
-            cout << "MEDIUM" << endl;
+                 currentRound < (LEVEL_0_ROUNDS+LEVEL_1_ROUNDS)*COLUMNS) {
+            ofLog(OF_LOG_NOTICE, "LEVEL: MEDIUM");
+        }
+        
         else if (currentRound >= (LEVEL_0_ROUNDS+LEVEL_1_ROUNDS)*COLUMNS &&
-                 currentRound < (LEVEL_0_ROUNDS+LEVEL_1_ROUNDS+LEVEL_2_ROUNDS)*COLUMNS)
-            cout << "HARD" << endl;
-        else
-            endGame();
+                 currentRound < (LEVEL_0_ROUNDS+LEVEL_1_ROUNDS+LEVEL_2_ROUNDS)*COLUMNS){
+            ofLog(OF_LOG_NOTICE, "LEVEL: HARD");
+        }
+        
+        else    endGame();
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    // Draw background
-    currentTheme->draw();
-    
+    // Draw background with or without splash
+    currentTheme->draw(!bGameRunning && !bCountdownRunning);
     
     if (bGameRunning && !bCountdownRunning){
         
@@ -143,6 +149,7 @@ void ofApp::draw(){
         }
         
     } else {
+        
         if (bCountdownRunning){
             // Draw Countdown
             ofPushMatrix();

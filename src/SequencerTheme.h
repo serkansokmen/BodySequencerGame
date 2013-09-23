@@ -14,13 +14,15 @@
 
 class SequencerTheme {
     
-public:
-    
-    void setup(string soundPath, string bgPath);
-    void draw();
-    
     string      soundPath;
     ofImage     background;
+    ofImage     interface;
+    ofImage     splashImage;
+    
+public:
+    
+    void setup(string soundPath, string bgPath, string interfaceImagePath);
+    void draw(bool bShowSplash);
     
     vector<ofSoundPlayer> players;
 };

@@ -5,6 +5,7 @@
 #include "ofxCenteredTrueTypeFont.h"
 #include "MSABPMTapper.h"
 #include "MSATimer.h"
+#include "ofxTweener.h"
 #include "SequencerTheme.h"
 
 
