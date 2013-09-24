@@ -29,10 +29,8 @@ void ofApp::setup(){
     
     currentThemeId = 0;
     
-    
     gui.setup("Body Sequencer");
-    gui.add(bpm.set("Speed", 192, 40, 255));
-    gui.add(bDrawBpmTapper.set("Draw BPM Tapper", true));
+    gui.add(tempo.set("Tempo", START_TEMPO, 40, 255));
     gui.add(startCountdownButton.setup("Start Game"));
     gui.add(endGameButton.setup("End Game"));
     gui.add(seqPos.set("Sequencer Position",
@@ -50,23 +48,19 @@ void ofApp::setup(){
     
     startCountdownButton.addListener(this, &ofApp::startCountdown);
     endGameButton.addListener(this, &ofApp::endGame);
-    bpm.addListener(this, &ofApp::bpmChanged);
+    tempo.addListener(this, &ofApp::tempoChanged);
     seqPos.addListener(this, &ofApp::sequencerPositionChanged);
     seqWidth.addListener(this, &ofApp::sequencerWidthChanged);
     seqHeight.addListener(this, &ofApp::sequencerHeightChanged);
     currentThemeId.addListener(this, &ofApp::currentThemeIdChanged);
     
-    
     gui.loadFromFile("settings.xml");
     bHideGui = false;
-    
-    bpmTapper.setBpm(bpm);
     
     bCountdownRunning = false;
     bGameRunning = false;
     startTimer.stop();
-    currentStep = 0;
-    lastStep = 0;
+    clock.notesPerPhrase = COLUMNS;
 }
 
 //--------------------------------------------------------------
@@ -80,39 +74,37 @@ void ofApp::update(){
     
     if (bGameRunning){
         
-        int totalSteps = (int)bpmTapper.beatTime();
-        currentStep = totalSteps % COLUMNS;
+        cout << clock.totalNotes << endl;
         
-        if (lastStep != currentStep && currentStep == 0) {
+        int totalSteps = clock.totalNotes;
+        int currentStep = clock.notes;
+        
+        if (currentStep == 0) {
             if (totalSteps < level_0_rounds*COLUMNS){
                 ofLog(OF_LOG_NOTICE, "LEVEL 0");
-                bpm = 80.0;
+                tempo = 80.0;
             }
             
             else if (totalSteps >= level_0_rounds*COLUMNS &&
                      totalSteps < (level_0_rounds+level_1_rounds)*COLUMNS){
                 ofLog(OF_LOG_NOTICE, "LEVEL 1");
-                bpm = 90.0;
+                tempo = 90.0;
             }
             
             else if (totalSteps >= (level_0_rounds+level_1_rounds)*COLUMNS &&
                      totalSteps < (level_0_rounds+level_1_rounds+level_2_rounds)*COLUMNS){
                 ofLog(OF_LOG_NOTICE, "LEVEL 2");
-                bpm = 120.0;
+                tempo = 120.0;
             }
             
             else if (totalSteps >= (level_0_rounds+level_1_rounds+level_2_rounds)*COLUMNS &&
                      totalSteps < (level_0_rounds+level_1_rounds+level_2_rounds+level_3_rounds)*COLUMNS){
                 ofLog(OF_LOG_NOTICE, "LEVEL 3");
-                bpm = 160.0;
+                tempo = 160.0;
             }
             
             else { endGame(); }
         }
-        
-        lastStep = currentStep;
-        
-        bpmTapper.update();
     }
 }
 
@@ -123,6 +115,8 @@ void ofApp::draw(){
     currentTheme->draw(!bGameRunning && !bCountdownRunning);
     
     if (bGameRunning && !bCountdownRunning){
+        
+        int currentStep = clock.notes;
         
         // Draw scrubbers
         ofPushMatrix();
@@ -164,10 +158,6 @@ void ofApp::draw(){
         }
         ofPopMatrix();
         
-        if (bDrawBpmTapper) {
-            bpmTapper.draw(ofGetWidth() - 120, 20, 5);
-        }
-        
     } else {
         
         if (bCountdownRunning){
@@ -202,9 +192,6 @@ void ofApp::keyPressed(int key){
             break;
         case 's':
             bHideGui = !bHideGui;
-            break;
-        case 'b':
-            bpmTapper.tap();
             break;
         default:
         break;
@@ -257,7 +244,7 @@ void ofApp::exit(){
     
     startCountdownButton.removeListener(this, &ofApp::startCountdown);
     endGameButton.removeListener(this, &ofApp::endGame);
-    bpm.removeListener(this, &ofApp::bpmChanged);
+    tempo.removeListener(this, &ofApp::tempoChanged);
     
     seqPos.removeListener(this, &ofApp::sequencerPositionChanged);
     seqWidth.removeListener(this, &ofApp::sequencerWidthChanged);
@@ -282,10 +269,9 @@ void ofApp::startGame(){
     
     bGameRunning = true;
     bCountdownRunning = false;
-    lastStep = 0;
     
     startTimer.stop();
-    bpmTapper.startFresh();
+    clock.start(this);
     
     ofLog(OF_LOG_NOTICE, "Game started");
 }
@@ -293,13 +279,14 @@ void ofApp::startGame(){
 //--------------------------------------------------------------
 void ofApp::endGame(){
     bGameRunning = false;
+    clock.stop();
+    
     ofLog(OF_LOG_NOTICE, "Game ended");
 }
 
 //--------------------------------------------------------------
-void ofApp::bpmChanged(float &newVal){
-    bpmTapper.setBpm(newVal);
-//    bpmTapper.startFresh();
+void ofApp::tempoChanged(float &newVal){
+    
 }
 
 //--------------------------------------------------------------
@@ -322,4 +309,23 @@ void ofApp::currentThemeIdChanged(int &newId){
     
     currentTheme = &themes[newId];
 
+}
+
+//--------------------------------------------------------------
+void ofApp::phraseComplete()
+{
+    
+    // Play sounds here
+    // This is called exactly at every four measures at 125bpm
+    cout << "Phrase complete" << endl;
+    
+}
+
+//--------------------------------------------------------------
+int ofApp::calculateNoteDuration()
+{
+    
+    // Translate tempo to milliseconds
+    return (int)floor(60000.0000f / tempo);
+    
 }

@@ -3,7 +3,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxCenteredTrueTypeFont.h"
-#include "MSABPMTapper.h"
+#include "ClockThread.h"
 #include "MSATimer.h"
 #include "ofxTweener.h"
 #include "SequencerTheme.h"
@@ -17,13 +17,14 @@
 
 #define SEQUENCER_MAX_WIDTH     800
 #define SEQUENCER_MAX_HEIGHT    800
+#define START_TEMPO             80.0
 
 #define SCRUBBER_HEIGHT         8
 
 
 
 class ofApp : public ofBaseApp {
-    
+
 public:
     void setup();
     void update();
@@ -44,7 +45,7 @@ public:
     void startGame();
     void endGame();
     
-    void bpmChanged(float &newVal);
+    void tempoChanged(float &newVal);
     
     void sequencerPositionChanged(ofVec2f &newPos);
     void sequencerWidthChanged(float &newWidth);
@@ -52,18 +53,22 @@ public:
     
     void currentThemeIdChanged(int &newId);
     
+    // Events
+    void phraseComplete();
+    
+    // Gets note duration
+    int calculateNoteDuration();
+    
     
     ofxPanel                gui;
     ofxButton               startCountdownButton, endGameButton;
     
     ofxCenteredTrueTypeFont font;
     
-    ofParameter<float>      bpm;
-    ofParameter<bool>       bDrawBpmTapper;
-    ofParameter<int>        currentStep;
-    int                     lastStep;
+    // Clock
+    ClockThread             clock;
+    ofParameter<float>      tempo;
     
-    msa::BPMTapper          bpmTapper;
     msa::Timer              startTimer;
     
     ofRectangle             sequencerArea;
@@ -86,5 +91,4 @@ public:
     ofParameter<int>        level_1_rounds;
     ofParameter<int>        level_2_rounds;
     ofParameter<int>        level_3_rounds;
-    bool                    bSwitchLevel;
 };

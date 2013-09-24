@@ -1,7 +1,6 @@
 ofxGui
 ofxOsc
 ofxCenteredTrueTypeFont
-ofxMSABPMTapper
 ofxMSATimer
 ofxPostProcessing
 ofxTSPSReceiver
