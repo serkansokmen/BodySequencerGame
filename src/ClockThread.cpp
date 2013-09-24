@@ -9,10 +9,10 @@ void ClockThread::start(ofApp* p)
     parent = p;
     
     // Initialize note count
-    notes = 0;
-    totalNotes = 0;
+    notes = -1;
+    totalNotes = -1;
     
-    // Start thread -- blocking, venbose
+    // Start thread -- blocking, verbose
     startThread(true, false);
     
 }

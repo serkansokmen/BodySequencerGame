@@ -17,9 +17,13 @@
 
 #define SEQUENCER_MAX_WIDTH     800
 #define SEQUENCER_MAX_HEIGHT    800
-#define START_TEMPO             80.0
 
 #define SCRUBBER_HEIGHT         8
+
+#define LEVEL_0_TEMPO           80.0
+#define LEVEL_1_TEMPO           100.0
+#define LEVEL_2_TEMPO           120.0
+#define LEVEL_3_TEMPO           140.0
 
 
 
@@ -41,22 +45,25 @@ public:
     void gotMessage(ofMessage msg);
     void exit();
     
+    // Game
     void startCountdown();
     void startGame();
     void endGame();
     
-    void tempoChanged(float &newVal);
+    void setupThemes();
+    void setupGUI();
+    void drawCountdown();
+    void drawScrubbers();
+    void drawSequencer();
     
+    // ofParameter handlers
     void sequencerPositionChanged(ofVec2f &newPos);
     void sequencerWidthChanged(float &newWidth);
     void sequencerHeightChanged(float &newHeight);
-    
     void currentThemeIdChanged(int &newId);
     
-    // Events
+    // Threaded Clock
     void phraseComplete();
-    
-    // Gets note duration
     int calculateNoteDuration();
     
     
@@ -65,30 +72,24 @@ public:
     
     ofxCenteredTrueTypeFont font;
     
-    // Clock
     ClockThread             clock;
-    ofParameter<float>      tempo;
-    
-    msa::Timer              startTimer;
+    msa::Timer              countdownTimer;
     
     ofRectangle             sequencerArea;
+    SequencerTheme          *currentTheme;
+    vector<SequencerTheme>  themes;
+    
     ofParameter<ofVec2f>    seqPos;
     ofParameter<float>      seqWidth;
     ofParameter<float>      seqHeight;
-    
     ofParameter<int>        currentThemeId;
-    SequencerTheme          *currentTheme;
-    vector<SequencerTheme>  themes;
-
-    bool                    bCountdownRunning;
-    bool                    bGameRunning;
-    bool                    bHideGui;
-    
-    ofParameterGroup parameters;
-    ofXml settings;
-    
     ofParameter<int>        level_0_rounds;
     ofParameter<int>        level_1_rounds;
     ofParameter<int>        level_2_rounds;
     ofParameter<int>        level_3_rounds;
+    
+    float                   tempo;
+    bool                    bCountdownRunning;
+    bool                    bGameRunning;
+    bool                    bHideGui;
 };
