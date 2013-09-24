@@ -43,6 +43,10 @@ void ofApp::setup(){
     gui.add(seqWidth.set("Sequencer Width", SEQUENCER_MAX_WIDTH, 0, SEQUENCER_MAX_WIDTH));
     gui.add(seqHeight.set("Sequencer Height", SEQUENCER_MAX_HEIGHT, 0, SEQUENCER_MAX_HEIGHT));
     gui.add(currentThemeId.set("Current Theme", 0, 0, themes.size() - 1));
+    gui.add(level_0_rounds.set("LEVEL 0 Rounds", 2, 1, 50));
+    gui.add(level_1_rounds.set("LEVEL 1 Rounds", 2, 1, 20));
+    gui.add(level_2_rounds.set("LEVEL 2 Rounds", 2, 1, 10));
+    gui.add(level_3_rounds.set("LEVEL 3 Rounds", 2, 1, 5));
     
     startCountdownButton.addListener(this, &ofApp::startCountdown);
     endGameButton.addListener(this, &ofApp::endGame);
@@ -61,6 +65,8 @@ void ofApp::setup(){
     bCountdownRunning = false;
     bGameRunning = false;
     startTimer.stop();
+    currentStep = 0;
+    lastStep = 0;
 }
 
 //--------------------------------------------------------------
@@ -73,26 +79,40 @@ void ofApp::update(){
     }
     
     if (bGameRunning){
+        
+        int totalSteps = (int)bpmTapper.beatTime();
+        currentStep = totalSteps % COLUMNS;
+        
+        if (lastStep != currentStep && currentStep == 0) {
+            if (totalSteps < level_0_rounds*COLUMNS){
+                ofLog(OF_LOG_NOTICE, "LEVEL 0");
+                bpm = 80.0;
+            }
+            
+            else if (totalSteps >= level_0_rounds*COLUMNS &&
+                     totalSteps < (level_0_rounds+level_1_rounds)*COLUMNS){
+                ofLog(OF_LOG_NOTICE, "LEVEL 1");
+                bpm = 90.0;
+            }
+            
+            else if (totalSteps >= (level_0_rounds+level_1_rounds)*COLUMNS &&
+                     totalSteps < (level_0_rounds+level_1_rounds+level_2_rounds)*COLUMNS){
+                ofLog(OF_LOG_NOTICE, "LEVEL 2");
+                bpm = 120.0;
+            }
+            
+            else if (totalSteps >= (level_0_rounds+level_1_rounds+level_2_rounds)*COLUMNS &&
+                     totalSteps < (level_0_rounds+level_1_rounds+level_2_rounds+level_3_rounds)*COLUMNS){
+                ofLog(OF_LOG_NOTICE, "LEVEL 3");
+                bpm = 160.0;
+            }
+            
+            else { endGame(); }
+        }
+        
+        lastStep = currentStep;
+        
         bpmTapper.update();
-        
-        int currentRound = (int)bpmTapper.beatTime();
-        currentStep = currentRound % COLUMNS;
-        
-        if (currentRound < LEVEL_0_ROUNDS*COLUMNS){
-            ofLog(OF_LOG_NOTICE, "LEVEL: EASY");
-        }
-        
-        else if (currentRound >= LEVEL_0_ROUNDS*COLUMNS &&
-                 currentRound < (LEVEL_0_ROUNDS+LEVEL_1_ROUNDS)*COLUMNS) {
-            ofLog(OF_LOG_NOTICE, "LEVEL: MEDIUM");
-        }
-        
-        else if (currentRound >= (LEVEL_0_ROUNDS+LEVEL_1_ROUNDS)*COLUMNS &&
-                 currentRound < (LEVEL_0_ROUNDS+LEVEL_1_ROUNDS+LEVEL_2_ROUNDS)*COLUMNS){
-            ofLog(OF_LOG_NOTICE, "LEVEL: HARD");
-        }
-        
-        else    endGame();
     }
 }
 
@@ -178,10 +198,13 @@ void ofApp::draw(){
 void ofApp::keyPressed(int key){
     switch (key) {
         case ' ':
-            startGame();
+            startCountdown();
             break;
         case 's':
             bHideGui = !bHideGui;
+            break;
+        case 'b':
+            bpmTapper.tap();
             break;
         default:
         break;
@@ -259,6 +282,7 @@ void ofApp::startGame(){
     
     bGameRunning = true;
     bCountdownRunning = false;
+    lastStep = 0;
     
     startTimer.stop();
     bpmTapper.startFresh();
@@ -269,13 +293,13 @@ void ofApp::startGame(){
 //--------------------------------------------------------------
 void ofApp::endGame(){
     bGameRunning = false;
-    
     ofLog(OF_LOG_NOTICE, "Game ended");
 }
 
 //--------------------------------------------------------------
 void ofApp::bpmChanged(float &newVal){
     bpmTapper.setBpm(newVal);
+//    bpmTapper.startFresh();
 }
 
 //--------------------------------------------------------------

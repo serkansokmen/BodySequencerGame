@@ -20,10 +20,6 @@
 
 #define SCRUBBER_HEIGHT         8
 
-#define LEVEL_0_ROUNDS          2
-#define LEVEL_1_ROUNDS          1
-#define LEVEL_2_ROUNDS          1
-
 
 
 class ofApp : public ofBaseApp {
@@ -65,6 +61,7 @@ public:
     ofParameter<float>      bpm;
     ofParameter<bool>       bDrawBpmTapper;
     ofParameter<int>        currentStep;
+    int                     lastStep;
     
     msa::BPMTapper          bpmTapper;
     msa::Timer              startTimer;
@@ -81,4 +78,13 @@ public:
     bool                    bCountdownRunning;
     bool                    bGameRunning;
     bool                    bHideGui;
+    
+    ofParameterGroup parameters;
+    ofXml settings;
+    
+    ofParameter<int>        level_0_rounds;
+    ofParameter<int>        level_1_rounds;
+    ofParameter<int>        level_2_rounds;
+    ofParameter<int>        level_3_rounds;
+    bool                    bSwitchLevel;
 };
