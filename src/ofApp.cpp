@@ -21,6 +21,7 @@ void ofApp::setup(){
     bGameRunning = false;
     clock.notesPerPhrase = COLUMNS;
     tempo = LEVEL_0_TEMPO;
+    playerCount = 1;
 }
 
 //--------------------------------------------------------------
@@ -57,6 +58,9 @@ void ofApp::keyPressed(int key){
             break;
         case 's':
             bHideGui = !bHideGui;
+            break;
+        case 'g':
+            generateNewPattern();
             break;
         default:
         break;
@@ -184,6 +188,7 @@ void ofApp::startGame(){
     bCountdownRunning = false;
     
     countdownTimer.stop();
+    generateNewPattern();
     clock.start(this);
     
     ofLog(OF_LOG_NOTICE, "Game started");
@@ -198,6 +203,23 @@ void ofApp::endGame(){
     }
     
     ofLog(OF_LOG_NOTICE, "Game ended");
+}
+
+//--------------------------------------------------------------
+void ofApp::generateNewPattern(){
+    
+    // Generate random pattern
+    vector<int> vals;
+    vals.assign(COLUMNS*ROWS, 0);
+    for (int i=0; i<playerCount; i++){
+        vals[i] = 1;
+    }
+    ofRandomize(vals);
+    
+    // Assign random pattern to current pattern values
+    for (int j=0; j<vals.size(); j++){
+        currentPattern[j] = vals[j];
+    }
 }
 
 #pragma mark - Draw methods
@@ -256,7 +278,18 @@ void ofApp::drawSequencer(){
             
             ofPushStyle();
             ofSetColor(ofColor::blueSteel);
-            ofNoFill();
+            if (currentPattern[gridIndex] == 1 || previousPattern[gridIndex] == 1){
+                
+                if (previousPattern[gridIndex] == 1){
+                    ofSetColor(ofColor::greenYellow);
+                }
+                if (currentPattern[gridIndex] == 1){
+                    ofSetColor(ofColor::blueSteel);
+                }
+                
+            } else {
+                ofNoFill();
+            }
             ofRect(cellRect);
             ofPopStyle();
             
@@ -294,6 +327,12 @@ void ofApp::phraseComplete(){
     
     cout << "Phrase complete" << endl;
     
+    for (int i=0; i<COLUMNS*ROWS; i++) {
+        previousPattern[i] = currentPattern[i];
+    }
+    generateNewPattern();
+    
+    
     int totalSteps = clock.totalNotes;
     int currentStep = totalSteps % COLUMNS;
     
@@ -320,7 +359,9 @@ void ofApp::phraseComplete(){
         tempo = LEVEL_3_TEMPO;
     }
     
-    else { endGame(); }
+    else if (totalSteps > (level_0_rounds+level_1_rounds+level_2_rounds+level_3_rounds)*COLUMNS){
+        endGame();
+    }
 }
 
 //--------------------------------------------------------------
