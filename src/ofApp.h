@@ -66,6 +66,8 @@ public:
     void phraseComplete();
     int calculateNoteDuration();
     
+    void generateNewPattern();
+    
     
     ofxPanel                gui;
     ofxButton               startCountdownButton, endGameButton;
@@ -87,6 +89,10 @@ public:
     ofParameter<int>        level_1_rounds;
     ofParameter<int>        level_2_rounds;
     ofParameter<int>        level_3_rounds;
+    
+    int                     currentPattern[COLUMNS*ROWS];
+    int                     previousPattern[COLUMNS*ROWS];
+    unsigned int            playerCount;
     
     float                   tempo;
     bool                    bCountdownRunning;
