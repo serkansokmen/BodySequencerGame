@@ -12,6 +12,8 @@
 
 #define COUNTDOWN               3
 #define COUNTDOWN_RADIUS        180
+#define COUNTDOWN_FONT_SIZE     80
+#define DEFAULT_FONT_SIZE       50
 
 #define COLUMNS                 4
 #define ROWS                    4
@@ -51,6 +53,7 @@ public:
     void startGame();
     void endGame();
     void generateNewPattern();
+    void resetPatterns();
     
     void setupThemes();
     void setupGUI();
@@ -78,7 +81,7 @@ public:
     ofxPanel                gui;
     ofxButton               startCountdownButton, endGameButton;
     
-    ofxCenteredTrueTypeFont font;
+    ofxCenteredTrueTypeFont countdownFont, textFont;
     
     ClockThread             clock;
     msa::Timer              countdownTimer;
@@ -87,14 +90,25 @@ public:
     SequencerTheme          *currentTheme;
     vector<SequencerTheme>  themes;
     
+    ofParameterGroup        sequencerParameters;
     ofParameter<ofVec2f>    seqPos;
     ofParameter<float>      seqWidth;
     ofParameter<float>      seqHeight;
     ofParameter<int>        currentThemeId;
+    
+    ofParameterGroup        level_0_parameters;
+    ofParameterGroup        level_1_parameters;
+    ofParameterGroup        level_2_parameters;
+    ofParameterGroup        level_3_parameters;
+    ofParameter<float>      level_0_tempo;
+    ofParameter<float>      level_1_tempo;
+    ofParameter<float>      level_2_tempo;
+    ofParameter<float>      level_3_tempo;
     ofParameter<int>        level_0_rounds;
     ofParameter<int>        level_1_rounds;
     ofParameter<int>        level_2_rounds;
     ofParameter<int>        level_3_rounds;
+    string                  currentLevelStr;
     
     int                     currentPattern[COLUMNS*ROWS];
     int                     previousPattern[COLUMNS*ROWS];

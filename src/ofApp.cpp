@@ -12,7 +12,8 @@ void ofApp::setup(){
     ofSetCoordHandedness(OF_RIGHT_HANDED);
     ofSetCircleResolution(100);
     
-    font.loadFont("type/verdana.ttf", 120);
+    countdownFont.loadFont("type/Comfortaa-Light.ttf", COUNTDOWN_FONT_SIZE);
+    textFont.loadFont("type/Comfortaa-Light.ttf", DEFAULT_FONT_SIZE);
     
     setupThemes();
     setupGUI();
@@ -25,6 +26,7 @@ void ofApp::setup(){
     
     // Setup OpenTSPS
     tspsReceiver.connect(12000);
+    currentLevelStr = "";
 }
 
 //--------------------------------------------------------------
@@ -51,8 +53,21 @@ void ofApp::draw(){
     if (bCountdownRunning) drawCountdown();
     
     if (bGameRunning){
-        drawScrubbers();
+        
         drawSequencer();
+        
+        if (clock.totalNotes > clock.notes) {
+            drawScrubbers();
+            
+            textFont.drawStringCentered(currentLevelStr, ofGetWidth()/2, sequencerArea.getY() - DEFAULT_FONT_SIZE - 20);
+            
+//            int totalRounds = level_0_rounds + level_1_rounds + level_2_rounds + level_3_rounds - 1;
+//            string msg = ofToString(totalRounds);
+//            msg += "/" + ofToString(clock.totalNotes - 3);
+//            textFont.drawStringCentered(msg,
+//                                        sequencerArea.getX() + sequencerArea.getWidth()/2,
+//                                        sequencerArea.getY() + sequencerArea.getHeight() + DEFAULT_FONT_SIZE);
+        }
     }
     
     if (!bHideGui) gui.draw();
@@ -154,18 +169,37 @@ void ofApp::setupGUI(){
     gui.setup("Body Sequencer");
     gui.add(startCountdownButton.setup("Start Game"));
     gui.add(endGameButton.setup("End Game"));
-    gui.add(seqPos.set("Sequencer Position",
-                       ofVec2f((ofGetWidth() - SEQUENCER_MAX_WIDTH)*.5,
-                               (ofGetHeight() - SEQUENCER_MAX_HEIGHT)*.5),
-                       ofVec2f(0, 0),
-                       ofVec2f(ofGetWidth(), ofGetHeight())));
-    gui.add(seqWidth.set("Sequencer Width", SEQUENCER_MAX_WIDTH, 0, SEQUENCER_MAX_WIDTH));
-    gui.add(seqHeight.set("Sequencer Height", SEQUENCER_MAX_HEIGHT, 0, SEQUENCER_MAX_HEIGHT));
-    gui.add(currentThemeId.set("Current Theme", 0, 0, themes.size() - 1));
-    gui.add(level_0_rounds.set("LEVEL 0 Rounds", 2, 1, 50));
-    gui.add(level_1_rounds.set("LEVEL 1 Rounds", 2, 1, 20));
-    gui.add(level_2_rounds.set("LEVEL 2 Rounds", 2, 1, 10));
-    gui.add(level_3_rounds.set("LEVEL 3 Rounds", 2, 1, 5));
+    
+    sequencerParameters.setName("Sequencer");
+    sequencerParameters.add(seqPos.set("Position",
+                                       ofVec2f((ofGetWidth() - SEQUENCER_MAX_WIDTH)*.5,
+                                               (ofGetHeight() - SEQUENCER_MAX_HEIGHT)*.5),
+                                       ofVec2f(0, 0),
+                                       ofVec2f(ofGetWidth(), ofGetHeight())));
+    sequencerParameters.add(seqWidth.set("Width", SEQUENCER_MAX_WIDTH, 0, SEQUENCER_MAX_WIDTH));
+    sequencerParameters.add(seqHeight.set("Height", SEQUENCER_MAX_HEIGHT, 0, SEQUENCER_MAX_HEIGHT));
+    sequencerParameters.add(currentThemeId.set("Current Theme", 0, 0, themes.size() - 1));
+    gui.add(sequencerParameters);
+    
+    level_0_parameters.setName("Level 0");
+    level_0_parameters.add(level_0_tempo.set("Tempo", LEVEL_0_TEMPO, 20, 200));
+    level_0_parameters.add(level_0_rounds.set("Rounds", 2, 1, 50));
+    gui.add(level_0_parameters);
+    
+    level_1_parameters.setName("Level 1");
+    level_1_parameters.add(level_1_tempo.set("Tempo", LEVEL_1_TEMPO, 20, 200));
+    level_1_parameters.add(level_1_rounds.set("Rounds", 2, 0, 20));
+    gui.add(level_1_parameters);
+    
+    level_2_parameters.setName("Level 2");
+    level_2_parameters.add(level_2_tempo.set("Tempo", LEVEL_2_TEMPO, 20, 200));
+    level_2_parameters.add(level_2_rounds.set("Rounds", 2, 0, 10));
+    gui.add(level_2_parameters);
+    
+    level_3_parameters.setName("Level 3");
+    level_3_parameters.add(level_3_tempo.set("Tempo", LEVEL_3_TEMPO, 20, 200));
+    level_3_parameters.add(level_3_rounds.set("Rounds", 2, 0, 5));
+    gui.add(level_3_parameters);
     
     startCountdownButton.addListener(this, &ofApp::startCountdown);
     endGameButton.addListener(this, &ofApp::endGame);
@@ -173,6 +207,9 @@ void ofApp::setupGUI(){
     seqWidth.addListener(this, &ofApp::sequencerWidthChanged);
     seqHeight.addListener(this, &ofApp::sequencerHeightChanged);
     currentThemeId.addListener(this, &ofApp::currentThemeIdChanged);
+    
+    gui.setBackgroundColor(ofColor::black);
+    gui.setBorderColor(ofColor::white);
     
     gui.loadFromFile("settings.xml");
     bHideGui = false;
@@ -197,6 +234,9 @@ void ofApp::startGame(){
     
     countdownTimer.stop();
     generateNewPattern();
+    if (clock.isThreadRunning()){
+        clock.stop();
+    }
     clock.start(this);
     
     ofxAddTSPSListeners(this);
@@ -206,7 +246,9 @@ void ofApp::startGame(){
 
 //--------------------------------------------------------------
 void ofApp::endGame(){
+    
     bGameRunning = false;
+    resetPatterns();
     
     if (clock.isThreadRunning()){
         clock.stop();
@@ -234,6 +276,20 @@ void ofApp::generateNewPattern(){
     }
 }
 
+//--------------------------------------------------------------
+void ofApp::resetPatterns(){
+    
+    // Generate zero pattern
+    vector<int> vals;
+    vals.assign(COLUMNS*ROWS, 0);
+    
+    // Assign zero pattern to pattern values
+    for (int j=0; j<vals.size(); j++){
+        currentPattern[j] = vals[j];
+        previousPattern[j] = vals[j];
+    }
+}
+
 #pragma mark - Draw methods
 //--------------------------------------------------------------
 void ofApp::drawCountdown(){
@@ -246,7 +302,7 @@ void ofApp::drawCountdown(){
     ofSetColor(ofColor::whiteSmoke, 20);
     ofCircle(0, 0, COUNTDOWN_RADIUS);
     ofSetColor(ofColor::white);
-    font.drawStringCentered(ofToString(COUNTDOWN - (int)countdownTimer.getSeconds()), 0, 0);
+    countdownFont.drawStringCentered(ofToString(COUNTDOWN - (int)countdownTimer.getSeconds()), 0, 0);
     ofPopStyle();
     ofPopMatrix();
 }
@@ -337,7 +393,7 @@ void ofApp::currentThemeIdChanged(int &newId){
 //--------------------------------------------------------------
 void ofApp::phraseComplete(){
     
-    cout << "Phrase complete" << endl;
+    ofLog(OF_LOG_NOTICE, "Phrase Complete");
     
     for (int i=0; i<COLUMNS*ROWS; i++) {
         previousPattern[i] = currentPattern[i];
@@ -349,29 +405,33 @@ void ofApp::phraseComplete(){
     int currentStep = totalSteps % COLUMNS;
     
     if (totalSteps < level_0_rounds*COLUMNS){
-        ofLog(OF_LOG_NOTICE, "LEVEL 0");
-        tempo = LEVEL_0_TEMPO;
+        currentLevelStr = "LEVEL 0";
+        ofLog(OF_LOG_NOTICE, currentLevelStr);
+        tempo = level_0_tempo;
     }
     
     else if (totalSteps >= level_0_rounds*COLUMNS &&
              totalSteps < (level_0_rounds+level_1_rounds)*COLUMNS){
-        ofLog(OF_LOG_NOTICE, "LEVEL 1");
-        tempo = LEVEL_1_TEMPO;
+        currentLevelStr = "LEVEL 1";
+        ofLog(OF_LOG_NOTICE, currentLevelStr);
+        tempo = level_1_tempo;
     }
     
     else if (totalSteps >= (level_0_rounds+level_1_rounds)*COLUMNS &&
              totalSteps < (level_0_rounds+level_1_rounds+level_2_rounds)*COLUMNS){
-        ofLog(OF_LOG_NOTICE, "LEVEL 2");
-        tempo = LEVEL_2_TEMPO;
+        currentLevelStr = "LEVEL 2";
+        ofLog(OF_LOG_NOTICE, currentLevelStr);
+        tempo = level_2_tempo;
     }
     
     else if (totalSteps >= (level_0_rounds+level_1_rounds+level_2_rounds)*COLUMNS &&
              totalSteps < (level_0_rounds+level_1_rounds+level_2_rounds+level_3_rounds)*COLUMNS){
-        ofLog(OF_LOG_NOTICE, "LEVEL 3");
-        tempo = LEVEL_3_TEMPO;
+        currentLevelStr = "LEVEL 3";
+        ofLog(OF_LOG_NOTICE, currentLevelStr);
+        tempo = level_3_tempo;
     }
     
-    else if (totalSteps > (level_0_rounds+level_1_rounds+level_2_rounds+level_3_rounds)*COLUMNS){
+    else if (totalSteps >= (level_0_rounds+level_1_rounds+level_2_rounds+level_3_rounds)*COLUMNS){
         endGame();
     }
 }
