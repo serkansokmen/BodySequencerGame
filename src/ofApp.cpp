@@ -22,6 +22,9 @@ void ofApp::setup(){
     clock.notesPerPhrase = COLUMNS;
     tempo = LEVEL_0_TEMPO;
     playerCount = 1;
+    
+    // Setup OpenTSPS
+    tspsReceiver.connect(12000);
 }
 
 //--------------------------------------------------------------
@@ -31,6 +34,11 @@ void ofApp::update(){
     
     if (bCountdownRunning && !bGameRunning && countdownTimer.getSeconds() >= COUNTDOWN){
         startGame();
+    }
+    
+    if (bGameRunning){
+        vector<ofxTSPS::Person*> people = tspsReceiver.getPeople();
+        ofxTSPS::Scene *scene = tspsReceiver.getScene();
     }
 }
 
@@ -191,6 +199,8 @@ void ofApp::startGame(){
     generateNewPattern();
     clock.start(this);
     
+    ofxAddTSPSListeners(this);
+    
     ofLog(OF_LOG_NOTICE, "Game started");
 }
 
@@ -201,6 +211,8 @@ void ofApp::endGame(){
     if (clock.isThreadRunning()){
         clock.stop();
     }
+    
+    ofxRemoveTSPSListeners(this);
     
     ofLog(OF_LOG_NOTICE, "Game ended");
 }
@@ -369,4 +381,24 @@ int ofApp::calculateNoteDuration(){
     
     // Translate tempo to milliseconds
     return (int)floor(60000.0000f / tempo);
+}
+
+
+#pragma mark - OpenTSPS Listeners
+//--------------------------------------------------------------
+void ofApp::onPersonEntered(ofxTSPS::EventArgs & tspsEvent){
+	ofPoint loc = ofPoint(tspsEvent.person->centroid);
+    ofLog(OF_LOG_NOTICE, "Person entered");
+}
+
+//--------------------------------------------------------------
+void ofApp::onPersonUpdated(ofxTSPS::EventArgs & tspsEvent){
+    ofPoint loc = ofPoint(tspsEvent.person->centroid);
+    ofLog(OF_LOG_NOTICE, "Person updated!");
+}
+
+//--------------------------------------------------------------
+void ofApp::onPersonWillLeave(ofxTSPS::EventArgs & tspsEvent){
+    ofPoint loc = ofPoint(tspsEvent.person->centroid);
+	ofLog(OF_LOG_NOTICE, "Person left");
 }

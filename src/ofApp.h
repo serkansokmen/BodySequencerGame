@@ -5,6 +5,7 @@
 #include "ofxCenteredTrueTypeFont.h"
 #include "ClockThread.h"
 #include "MSATimer.h"
+#include "ofxTSPSReceiver.h"
 #include "ofxTweener.h"
 #include "SequencerTheme.h"
 
@@ -49,6 +50,7 @@ public:
     void startCountdown();
     void startGame();
     void endGame();
+    void generateNewPattern();
     
     void setupThemes();
     void setupGUI();
@@ -66,8 +68,12 @@ public:
     void phraseComplete();
     int calculateNoteDuration();
     
-    void generateNewPattern();
+    // OpenTSPS Event Listeners
+    void onPersonEntered(ofxTSPS::EventArgs & tspsEvent);
+    void onPersonUpdated(ofxTSPS::EventArgs & tspsEvent);
+    void onPersonWillLeave(ofxTSPS::EventArgs & tspsEvent);
     
+    ofxTSPS::Receiver       tspsReceiver;
     
     ofxPanel                gui;
     ofxButton               startCountdownButton, endGameButton;
