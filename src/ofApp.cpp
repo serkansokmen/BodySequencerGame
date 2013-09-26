@@ -21,7 +21,7 @@ void ofApp::setup(){
     bCountdownRunning = false;
     bGameRunning = false;
     clock.notesPerPhrase = COLUMNS;
-    tempo = LEVEL_0_TEMPO;
+    tempo = level_0_tempo;
     playerCount = 1;
     
     // Setup OpenTSPS
@@ -220,7 +220,7 @@ void ofApp::startCountdown(){
     
     bGameRunning = false;
     bCountdownRunning = true;
-    
+    tempo = level_0_tempo;
     countdownTimer.start();
     
     ofLog(OF_LOG_NOTICE, "Starting game in " + ofToString(COUNTDOWN) + " seconds");
