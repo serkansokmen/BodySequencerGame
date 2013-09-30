@@ -15,6 +15,8 @@
 #define COUNTDOWN_FONT_SIZE     80
 #define DEFAULT_FONT_SIZE       50
 
+#define MAX_PLAYER_COUNT        4
+
 #define COLUMNS                 4
 #define ROWS                    4
 
@@ -33,48 +35,48 @@
 class ofApp : public ofBaseApp {
 
 public:
-    void setup();
-    void update();
-    void draw();
+    void    setup();
+    void    update();
+    void 	draw();
     
-    void keyPressed(int key);
-    void keyReleased(int key);
-    void mouseMoved(int x, int y );
-    void mouseDragged(int x, int y, int button);
-    void mousePressed(int x, int y, int button);
-    void mouseReleased(int x, int y, int button);
-    void windowResized(int w, int h);
-    void dragEvent(ofDragInfo dragInfo);
-    void gotMessage(ofMessage msg);
-    void exit();
+    void    keyPressed(int key);
+    void    keyReleased(int key);
+    void    mouseMoved(int x, int y );
+    void    mouseDragged(int x, int y, int button);
+    void    mousePressed(int x, int y, int button);
+    void    mouseReleased(int x, int y, int button);
+    void    windowResized(int w, int h);
+    void    dragEvent(ofDragInfo dragInfo);
+    void    gotMessage(ofMessage msg);
+    void    exit();
     
     // Game
-    void startCountdown();
-    void startGame();
-    void endGame();
-    void generateNewPattern();
-    void resetPatterns();
+    void    startCountdown();
+    void    startGame();
+    void    endGame();
+    void    generateNewPattern(bool initial);
+    void    resetPatterns();
     
-    void setupThemes();
-    void setupGUI();
-    void drawCountdown();
-    void drawScrubbers();
-    void drawSequencer();
+    void    setupThemes();
+    void    setupGUI();
+    void    drawCountdown();
+    void    drawScrubbers();
+    void    drawSequencer();
     
     // ofParameter handlers
-    void sequencerPositionChanged(ofVec2f &newPos);
-    void sequencerWidthChanged(float &newWidth);
-    void sequencerHeightChanged(float &newHeight);
-    void currentThemeIdChanged(int &newId);
+    void    sequencerPositionChanged(ofVec2f &newPos);
+    void    sequencerWidthChanged(float &newWidth);
+    void    sequencerHeightChanged(float &newHeight);
+    void    currentThemeIdChanged(int &newId);
     
     // Threaded Clock
-    void phraseComplete();
-    int calculateNoteDuration();
+    void    phraseComplete();
+    int     calculateNoteDuration();
     
     // OpenTSPS Event Listeners
-    void onPersonEntered(ofxTSPS::EventArgs & tspsEvent);
-    void onPersonUpdated(ofxTSPS::EventArgs & tspsEvent);
-    void onPersonWillLeave(ofxTSPS::EventArgs & tspsEvent);
+    void    onPersonEntered(ofxTSPS::EventArgs & tspsEvent);
+    void    onPersonUpdated(ofxTSPS::EventArgs & tspsEvent);
+    void    onPersonWillLeave(ofxTSPS::EventArgs & tspsEvent);
     
     ofxTSPS::Receiver       tspsReceiver;
     
@@ -91,6 +93,7 @@ public:
     vector<SequencerTheme>  themes;
     
     ofParameterGroup        sequencerParameters;
+    ofParameter<int>        playerCount;
     ofParameter<ofVec2f>    seqPos;
     ofParameter<float>      seqWidth;
     ofParameter<float>      seqHeight;
@@ -112,7 +115,6 @@ public:
     
     int                     currentPattern[COLUMNS*ROWS];
     int                     previousPattern[COLUMNS*ROWS];
-    unsigned int            playerCount;
     
     float                   tempo;
     bool                    bCountdownRunning;

@@ -22,7 +22,6 @@ void ofApp::setup(){
     bGameRunning = false;
     clock.notesPerPhrase = COLUMNS;
     tempo = level_0_tempo;
-    playerCount = 1;
     
     // Setup OpenTSPS
     tspsReceiver.connect(12000);
@@ -40,7 +39,9 @@ void ofApp::update(){
     
     if (bGameRunning){
         vector<ofxTSPS::Person*> people = tspsReceiver.getPeople();
-        ofxTSPS::Scene *scene = tspsReceiver.getScene();
+        for (int i=0; i<people.size(); i++) {
+            cout << people[i]->age << endl;
+        }
     }
 }
 
@@ -55,11 +56,9 @@ void ofApp::draw(){
     if (bGameRunning){
         
         drawSequencer();
-        
-        if (clock.totalNotes > clock.notes) {
-            drawScrubbers();
+        drawScrubbers();
             
-            textFont.drawStringCentered(currentLevelStr, ofGetWidth()/2, sequencerArea.getY() - DEFAULT_FONT_SIZE - 20);
+        textFont.drawStringCentered(currentLevelStr, ofGetWidth()/2, sequencerArea.getY() - DEFAULT_FONT_SIZE - 20);
             
 //            int totalRounds = level_0_rounds + level_1_rounds + level_2_rounds + level_3_rounds - 1;
 //            string msg = ofToString(totalRounds);
@@ -67,7 +66,6 @@ void ofApp::draw(){
 //            textFont.drawStringCentered(msg,
 //                                        sequencerArea.getX() + sequencerArea.getWidth()/2,
 //                                        sequencerArea.getY() + sequencerArea.getHeight() + DEFAULT_FONT_SIZE);
-        }
     }
     
     if (!bHideGui) gui.draw();
@@ -83,7 +81,7 @@ void ofApp::keyPressed(int key){
             bHideGui = !bHideGui;
             break;
         case 'g':
-            generateNewPattern();
+            generateNewPattern(true);
             break;
         default:
         break;
@@ -167,6 +165,7 @@ void ofApp::setupThemes(){
 void ofApp::setupGUI(){
     
     gui.setup("Body Sequencer");
+    gui.add(playerCount.set("Player Count", 1, 1, MAX_PLAYER_COUNT));
     gui.add(startCountdownButton.setup("Start Game"));
     gui.add(endGameButton.setup("End Game"));
     
@@ -221,6 +220,7 @@ void ofApp::startCountdown(){
     bGameRunning = false;
     bCountdownRunning = true;
     tempo = level_0_tempo;
+    currentLevelStr = "LEVEL 0";
     countdownTimer.start();
     
     ofLog(OF_LOG_NOTICE, "Starting game in " + ofToString(COUNTDOWN) + " seconds");
@@ -233,7 +233,7 @@ void ofApp::startGame(){
     bCountdownRunning = false;
     
     countdownTimer.stop();
-    generateNewPattern();
+    generateNewPattern(true);
     if (clock.isThreadRunning()){
         clock.stop();
     }
@@ -260,17 +260,32 @@ void ofApp::endGame(){
 }
 
 //--------------------------------------------------------------
-void ofApp::generateNewPattern(){
+void ofApp::generateNewPattern(bool initial){
     
-    // Generate random pattern
+    // Temporary values vector
     vector<int> vals;
     vals.assign(COLUMNS*ROWS, 0);
-    for (int i=0; i<playerCount; i++){
-        vals[i] = 1;
-    }
-    ofRandomize(vals);
     
-    // Assign random pattern to current pattern values
+    if (initial){
+        // Generate initial pattern
+        for (int i=0; i<playerCount; i++){
+            int randIndex = 3 + i * COLUMNS;
+            vals[randIndex] = 1;
+        }
+    } else {
+        // Assign current pattern to previous
+        for (int i=0; i<COLUMNS*ROWS; i++) {
+            previousPattern[i] = currentPattern[i];
+        }
+        // Randomize pattern
+        for (int i=0; i<playerCount; i++){
+            vals[i] = 1;
+        }
+        ofRandomize(vals);
+        // FIXME: Check if previous and current overlaps
+    }
+    
+    // Assign pattern to current pattern values
     for (int j=0; j<vals.size(); j++){
         currentPattern[j] = vals[j];
     }
@@ -395,14 +410,11 @@ void ofApp::phraseComplete(){
     
     ofLog(OF_LOG_NOTICE, "Phrase Complete");
     
-    for (int i=0; i<COLUMNS*ROWS; i++) {
-        previousPattern[i] = currentPattern[i];
-    }
-    generateNewPattern();
-    
-    
     int totalSteps = clock.totalNotes;
     int currentStep = totalSteps % COLUMNS;
+    
+    if (totalSteps < (level_0_rounds+level_1_rounds+level_2_rounds+level_3_rounds)*COLUMNS)
+        generateNewPattern(false);
     
     if (totalSteps < level_0_rounds*COLUMNS){
         currentLevelStr = "LEVEL 0";
