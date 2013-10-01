@@ -25,10 +25,10 @@
 
 #define SCRUBBER_HEIGHT         8
 
-#define LEVEL_1_TEMPO           80.0
-#define LEVEL_2_TEMPO           100.0
-#define LEVEL_3_TEMPO           120.0
-#define LEVEL_4_TEMPO           140.0
+#define LEVEL_1_MIN_TEMPO       80.0
+#define LEVEL_2_MIN_TEMPO       100.0
+#define LEVEL_3_MIN_TEMPO       120.0
+#define LEVEL_4_MIN_TEMPO       140.0
 
 
 
