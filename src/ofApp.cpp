@@ -181,22 +181,22 @@ void ofApp::setupGUI(){
     gui.add(sequencerParameters);
     
     level_1_parameters.setName("Level 1");
-    level_1_parameters.add(level_1_tempo.set("Tempo", LEVEL_1_TEMPO, 20, 200));
+    level_1_parameters.add(level_1_tempo.set("Tempo", LEVEL_1_MIN_TEMPO, LEVEL_1_MIN_TEMPO, LEVEL_2_MIN_TEMPO));
     level_1_parameters.add(level_1_rounds.set("Rounds", 2, 1, 50));
     gui.add(level_1_parameters);
     
     level_2_parameters.setName("Level 2");
-    level_2_parameters.add(level_2_tempo.set("Tempo", LEVEL_2_TEMPO, 20, 200));
+    level_2_parameters.add(level_2_tempo.set("Tempo", LEVEL_2_MIN_TEMPO, LEVEL_2_MIN_TEMPO, LEVEL_3_MIN_TEMPO));
     level_2_parameters.add(level_2_rounds.set("Rounds", 2, 1, 20));
     gui.add(level_2_parameters);
     
     level_3_parameters.setName("Level 3");
-    level_3_parameters.add(level_3_tempo.set("Tempo", LEVEL_3_TEMPO, 20, 200));
+    level_3_parameters.add(level_3_tempo.set("Tempo", LEVEL_3_MIN_TEMPO, LEVEL_3_MIN_TEMPO, LEVEL_4_MIN_TEMPO));
     level_3_parameters.add(level_3_rounds.set("Rounds", 2, 1, 10));
     gui.add(level_3_parameters);
     
     level_4_parameters.setName("Level 4");
-    level_4_parameters.add(level_4_tempo.set("Tempo", LEVEL_4_TEMPO, 20, 200));
+    level_4_parameters.add(level_4_tempo.set("Tempo", LEVEL_4_MIN_TEMPO, LEVEL_4_MIN_TEMPO, 200.f));
     level_4_parameters.add(level_4_rounds.set("Rounds", 2, 1, 5));
     gui.add(level_4_parameters);
     
@@ -450,7 +450,6 @@ void ofApp::phraseComplete(){
 
 //--------------------------------------------------------------
 int ofApp::calculateNoteDuration(){
-    
     // Translate tempo to milliseconds
     return (int)floor(60000.0000f / tempo);
 }
