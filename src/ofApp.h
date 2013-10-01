@@ -25,10 +25,10 @@
 
 #define SCRUBBER_HEIGHT         8
 
-#define LEVEL_0_TEMPO           80.0
-#define LEVEL_1_TEMPO           100.0
-#define LEVEL_2_TEMPO           120.0
-#define LEVEL_3_TEMPO           140.0
+#define LEVEL_1_TEMPO           80.0
+#define LEVEL_2_TEMPO           100.0
+#define LEVEL_3_TEMPO           120.0
+#define LEVEL_4_TEMPO           140.0
 
 
 
@@ -99,18 +99,18 @@ public:
     ofParameter<float>      seqHeight;
     ofParameter<int>        currentThemeId;
     
-    ofParameterGroup        level_0_parameters;
     ofParameterGroup        level_1_parameters;
     ofParameterGroup        level_2_parameters;
     ofParameterGroup        level_3_parameters;
-    ofParameter<float>      level_0_tempo;
+    ofParameterGroup        level_4_parameters;
     ofParameter<float>      level_1_tempo;
     ofParameter<float>      level_2_tempo;
     ofParameter<float>      level_3_tempo;
-    ofParameter<int>        level_0_rounds;
+    ofParameter<float>      level_4_tempo;
     ofParameter<int>        level_1_rounds;
     ofParameter<int>        level_2_rounds;
     ofParameter<int>        level_3_rounds;
+    ofParameter<int>        level_4_rounds;
     string                  currentLevelStr;
     
     int                     currentPattern[COLUMNS*ROWS];

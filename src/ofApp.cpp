@@ -21,7 +21,7 @@ void ofApp::setup(){
     bCountdownRunning = false;
     bGameRunning = false;
     clock.notesPerPhrase = COLUMNS;
-    tempo = level_0_tempo;
+    tempo = level_1_tempo;
     
     // Setup OpenTSPS
     tspsReceiver.connect(12000);
@@ -180,25 +180,25 @@ void ofApp::setupGUI(){
     sequencerParameters.add(currentThemeId.set("Current Theme", 0, 0, themes.size() - 1));
     gui.add(sequencerParameters);
     
-    level_0_parameters.setName("Level 0");
-    level_0_parameters.add(level_0_tempo.set("Tempo", LEVEL_0_TEMPO, 20, 200));
-    level_0_parameters.add(level_0_rounds.set("Rounds", 2, 1, 50));
-    gui.add(level_0_parameters);
-    
     level_1_parameters.setName("Level 1");
     level_1_parameters.add(level_1_tempo.set("Tempo", LEVEL_1_TEMPO, 20, 200));
-    level_1_parameters.add(level_1_rounds.set("Rounds", 2, 0, 20));
+    level_1_parameters.add(level_1_rounds.set("Rounds", 2, 1, 50));
     gui.add(level_1_parameters);
     
     level_2_parameters.setName("Level 2");
     level_2_parameters.add(level_2_tempo.set("Tempo", LEVEL_2_TEMPO, 20, 200));
-    level_2_parameters.add(level_2_rounds.set("Rounds", 2, 0, 10));
+    level_2_parameters.add(level_2_rounds.set("Rounds", 2, 1, 20));
     gui.add(level_2_parameters);
     
     level_3_parameters.setName("Level 3");
     level_3_parameters.add(level_3_tempo.set("Tempo", LEVEL_3_TEMPO, 20, 200));
-    level_3_parameters.add(level_3_rounds.set("Rounds", 2, 0, 5));
+    level_3_parameters.add(level_3_rounds.set("Rounds", 2, 1, 10));
     gui.add(level_3_parameters);
+    
+    level_4_parameters.setName("Level 4");
+    level_4_parameters.add(level_4_tempo.set("Tempo", LEVEL_4_TEMPO, 20, 200));
+    level_4_parameters.add(level_4_rounds.set("Rounds", 2, 1, 5));
+    gui.add(level_4_parameters);
     
     startCountdownButton.addListener(this, &ofApp::startCountdown);
     endGameButton.addListener(this, &ofApp::endGame);
@@ -219,8 +219,8 @@ void ofApp::startCountdown(){
     
     bGameRunning = false;
     bCountdownRunning = true;
-    tempo = level_0_tempo;
-    currentLevelStr = "LEVEL 0";
+    tempo = level_1_tempo;
+    currentLevelStr = "LEVEL 1";
     countdownTimer.start();
     
     ofLog(OF_LOG_NOTICE, "Starting game in " + ofToString(COUNTDOWN) + " seconds");
@@ -413,37 +413,37 @@ void ofApp::phraseComplete(){
     int totalSteps = clock.totalNotes;
     int currentStep = totalSteps % COLUMNS;
     
-    if (totalSteps < (level_0_rounds+level_1_rounds+level_2_rounds+level_3_rounds)*COLUMNS)
+    if (totalSteps < (level_1_rounds+level_2_rounds+level_3_rounds+level_4_rounds)*COLUMNS)
         generateNewPattern(false);
     
-    if (totalSteps < level_0_rounds*COLUMNS){
-        currentLevelStr = "LEVEL 0";
-        ofLog(OF_LOG_NOTICE, currentLevelStr);
-        tempo = level_0_tempo;
-    }
-    
-    else if (totalSteps >= level_0_rounds*COLUMNS &&
-             totalSteps < (level_0_rounds+level_1_rounds)*COLUMNS){
+    if (totalSteps < level_1_rounds*COLUMNS){
         currentLevelStr = "LEVEL 1";
         ofLog(OF_LOG_NOTICE, currentLevelStr);
         tempo = level_1_tempo;
     }
     
-    else if (totalSteps >= (level_0_rounds+level_1_rounds)*COLUMNS &&
-             totalSteps < (level_0_rounds+level_1_rounds+level_2_rounds)*COLUMNS){
+    else if (totalSteps >= level_1_rounds*COLUMNS &&
+             totalSteps < (level_1_rounds+level_2_rounds)*COLUMNS){
         currentLevelStr = "LEVEL 2";
         ofLog(OF_LOG_NOTICE, currentLevelStr);
         tempo = level_2_tempo;
     }
     
-    else if (totalSteps >= (level_0_rounds+level_1_rounds+level_2_rounds)*COLUMNS &&
-             totalSteps < (level_0_rounds+level_1_rounds+level_2_rounds+level_3_rounds)*COLUMNS){
+    else if (totalSteps >= (level_1_rounds+level_2_rounds)*COLUMNS &&
+             totalSteps < (level_1_rounds+level_2_rounds+level_3_rounds)*COLUMNS){
         currentLevelStr = "LEVEL 3";
         ofLog(OF_LOG_NOTICE, currentLevelStr);
         tempo = level_3_tempo;
     }
     
-    else if (totalSteps >= (level_0_rounds+level_1_rounds+level_2_rounds+level_3_rounds)*COLUMNS){
+    else if (totalSteps >= (level_1_rounds+level_2_rounds+level_3_rounds)*COLUMNS &&
+             totalSteps < (level_1_rounds+level_2_rounds+level_3_rounds+level_4_rounds)*COLUMNS){
+        currentLevelStr = "LEVEL 4";
+        ofLog(OF_LOG_NOTICE, currentLevelStr);
+        tempo = level_4_tempo;
+    }
+    
+    else if (totalSteps >= (level_1_rounds+level_2_rounds+level_3_rounds+level_4_rounds)*COLUMNS){
         endGame();
     }
 }
