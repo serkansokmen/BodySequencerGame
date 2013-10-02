@@ -8,6 +8,8 @@
 #include "ofxTSPSReceiver.h"
 #include "ofxTweener.h"
 #include "SequencerTheme.h"
+#include "GameEvent.h"
+#include "TrackCell.h"
 
 
 #define COUNTDOWN               3
@@ -51,6 +53,7 @@ public:
     void    exit();
     
     // Game
+    void    initTrackCells();
     void    startCountdown();
     void    startGame();
     void    endGame();
@@ -74,9 +77,13 @@ public:
     int     calculateNoteDuration();
     
     // OpenTSPS Event Listeners
-    void    onPersonEntered(ofxTSPS::EventArgs & tspsEvent);
-    void    onPersonUpdated(ofxTSPS::EventArgs & tspsEvent);
-    void    onPersonWillLeave(ofxTSPS::EventArgs & tspsEvent);
+    void    onPersonEntered(ofxTSPS::EventArgs &tspsEvent);
+    void    onPersonUpdated(ofxTSPS::EventArgs &tspsEvent);
+    void    onPersonWillLeave(ofxTSPS::EventArgs &tspsEvent);
+    void    checkPersonInsideTrackCell(ofxTSPS::Person *person);
+    
+    // Game Event
+    void    gameEvent(GameEvent &event);
     
     ofxTSPS::Receiver       tspsReceiver;
     
@@ -91,6 +98,7 @@ public:
     ofRectangle             sequencerArea;
     SequencerTheme          *currentTheme;
     vector<SequencerTheme>  themes;
+    vector<TrackCell>       cells;
     
     ofParameterGroup        sequencerParameters;
     ofParameter<int>        playerCount;

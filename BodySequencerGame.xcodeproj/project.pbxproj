@@ -14,7 +14,9 @@
 		114C00B13F753E59BB0984BB /* DofPass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E837DEBFAEA1CAD833A377DF /* DofPass.cpp */; };
 		1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 907C5B5E104864A2D3A25745 /* ofxToggle.cpp */; };
 		1E615236D6D182DED6C8A8B2 /* RenderPass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 54F36382628E4D0FF07206D7 /* RenderPass.cpp */; };
+		20050F2017FB4247002CED9C /* GameEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20050F1E17FB4247002CED9C /* GameEvent.cpp */; };
 		2011AF9817F1B9350059AF82 /* ClockThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2011AF9617F1B9350059AF82 /* ClockThread.cpp */; };
+		2027853D17FC3648002B9BC7 /* TrackCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2027853C17FC3648002B9BC7 /* TrackCell.cpp */; };
 		22E99AE0B7A3A9AC840134D9 /* SequencerTheme.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34ABBDCFE0A133C30261A95C /* SequencerTheme.cpp */; };
 		28090DEB5109115003E8F1C5 /* UdpSocketWin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5928AA323F5C2690B06C837D /* UdpSocketWin.cpp */; };
 		34F3D1F43536A7CBFCB88A38 /* ofxTSPSScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5580D7F0C03FD50CF9084AEE /* ofxTSPSScene.cpp */; };
@@ -116,8 +118,12 @@
 		193B78FC56A59A581D17A40B /* ofxTweener.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxTweener.h; path = ../../../addons/ofxTweener/src/ofxTweener.h; sourceTree = SOURCE_ROOT; };
 		19C22CD05D10F78B32FF80C6 /* ofApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofApp.cpp; path = src/ofApp.cpp; sourceTree = SOURCE_ROOT; };
 		1C0DA2561397A7DE0246858B /* ofxGuiGroup.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxGuiGroup.h; path = ../../../addons/ofxGui/src/ofxGuiGroup.h; sourceTree = SOURCE_ROOT; };
+		20050F1E17FB4247002CED9C /* GameEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameEvent.cpp; sourceTree = "<group>"; };
+		20050F1F17FB4247002CED9C /* GameEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameEvent.h; sourceTree = "<group>"; };
 		2011AF9617F1B9350059AF82 /* ClockThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClockThread.cpp; sourceTree = "<group>"; };
 		2011AF9717F1B9350059AF82 /* ClockThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClockThread.h; sourceTree = "<group>"; };
+		2027853C17FC3648002B9BC7 /* TrackCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrackCell.cpp; sourceTree = "<group>"; };
+		2027853E17FC3655002B9BC7 /* TrackCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TrackCell.h; sourceTree = "<group>"; };
 		20F35AFADAF0068B067E713F /* OscReceivedElements.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = OscReceivedElements.h; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscReceivedElements.h; sourceTree = SOURCE_ROOT; };
 		23640F57DF6C4BB6BFC5DA4C /* PacketListener.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = PacketListener.h; path = ../../../addons/ofxOsc/libs/oscpack/src/ip/PacketListener.h; sourceTree = SOURCE_ROOT; };
 		2834D88A62CD23F3DE2C47D1 /* ofxButton.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxButton.h; path = ../../../addons/ofxGui/src/ofxButton.h; sourceTree = SOURCE_ROOT; };
@@ -556,6 +562,10 @@
 				539027E2FC4A7822239CE8F1 /* SequencerTheme.h */,
 				2011AF9617F1B9350059AF82 /* ClockThread.cpp */,
 				2011AF9717F1B9350059AF82 /* ClockThread.h */,
+				20050F1E17FB4247002CED9C /* GameEvent.cpp */,
+				20050F1F17FB4247002CED9C /* GameEvent.h */,
+				2027853E17FC3655002B9BC7 /* TrackCell.h */,
+				2027853C17FC3648002B9BC7 /* TrackCell.cpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -710,8 +720,10 @@
 				778DCA6792476E5B9F57F175 /* ConvolutionPass.cpp in Sources */,
 				B58A80B21A55E254F48E6E13 /* DofAltPass.cpp in Sources */,
 				114C00B13F753E59BB0984BB /* DofPass.cpp in Sources */,
+				20050F2017FB4247002CED9C /* GameEvent.cpp in Sources */,
 				AE65C02FEC934514466A8D67 /* EdgePass.cpp in Sources */,
 				04C13EEA813A786CC1D8137A /* FxaaPass.cpp in Sources */,
+				2027853D17FC3648002B9BC7 /* TrackCell.cpp in Sources */,
 				884CB4D049E35C51E949A565 /* KaleidoscopePass.cpp in Sources */,
 				8072A86E35F7000F7CDEEF42 /* NoiseWarpPass.cpp in Sources */,
 				B951AAE35209993B4E399E77 /* PixelatePass.cpp in Sources */,
