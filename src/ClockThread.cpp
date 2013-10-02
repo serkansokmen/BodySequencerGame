@@ -2,8 +2,7 @@
 #include "ofApp.h"
 
 //--------------------------------------------------------------
-void ClockThread::start(ofApp* p)
-{
+void ClockThread::start(ofApp* p){
     
     // Get parent app
     parent = p;
@@ -14,21 +13,16 @@ void ClockThread::start(ofApp* p)
     
     // Start thread -- blocking, verbose
     startThread(true, false);
-    
 }
 
 //--------------------------------------------------------------
-void ClockThread::stop()
-{
-    
+void ClockThread::stop(){
     // Stop thread
     stopThread();
-    
 }
 
 //--------------------------------------------------------------
-void ClockThread::threadedFunction()
-{
+void ClockThread::threadedFunction(){
     // Thread is running
     while (isThreadRunning() != 0){
         // Lock thread

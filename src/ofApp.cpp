@@ -15,6 +15,7 @@ void ofApp::setup(){
     countdownFont.loadFont("type/Comfortaa-Light.ttf", COUNTDOWN_FONT_SIZE);
     textFont.loadFont("type/Comfortaa-Light.ttf", DEFAULT_FONT_SIZE);
     
+    initTrackCells();
     setupThemes();
     setupGUI();
     
@@ -38,9 +39,8 @@ void ofApp::update(){
     }
     
     if (bGameRunning){
-        vector<ofxTSPS::Person*> people = tspsReceiver.getPeople();
-        for (int i=0; i<people.size(); i++) {
-            cout << people[i]->age << endl;
+        for (int i=0; i<cells.size(); i++) {
+            cells[i].update();
         }
     }
 }
@@ -58,14 +58,9 @@ void ofApp::draw(){
         drawSequencer();
         drawScrubbers();
             
-        textFont.drawStringCentered(currentLevelStr, ofGetWidth()/2, sequencerArea.getY() - DEFAULT_FONT_SIZE - 20);
-            
-//            int totalRounds = level_0_rounds + level_1_rounds + level_2_rounds + level_3_rounds - 1;
-//            string msg = ofToString(totalRounds);
-//            msg += "/" + ofToString(clock.totalNotes - 3);
-//            textFont.drawStringCentered(msg,
-//                                        sequencerArea.getX() + sequencerArea.getWidth()/2,
-//                                        sequencerArea.getY() + sequencerArea.getHeight() + DEFAULT_FONT_SIZE);
+        textFont.drawStringCentered(currentLevelStr,
+                                    ofGetWidth()/2,
+                                    sequencerArea.getY() - DEFAULT_FONT_SIZE - 20);
     }
     
     if (!bHideGui) gui.draw();
@@ -215,6 +210,28 @@ void ofApp::setupGUI(){
 }
 
 //--------------------------------------------------------------
+void ofApp::initTrackCells(){
+    
+    cells.assign(COLUMNS*ROWS, TrackCell());
+    
+    for (int j=0; j<ROWS; j++) {
+        for (int i=0; i<COLUMNS; i++) {
+            int gridIndex = i + j * COLUMNS;
+            
+            float cw = sequencerArea.getWidth()/COLUMNS;
+            float ch = sequencerArea.getHeight()/ROWS;
+            float cx = i * cw;
+            float cy = j * ch;
+            
+            ofRectangle cellRect(cx, cy, cw, ch);
+            ofColor cellColor(ofColor::blueSteel);
+            cellColor.setHue(ofMap(j, 0, ROWS, 0, 255));
+            cells[gridIndex].setup(cellRect, cellColor);
+        }
+    }
+}
+
+//--------------------------------------------------------------
 void ofApp::startCountdown(){
     
     bGameRunning = false;
@@ -223,7 +240,8 @@ void ofApp::startCountdown(){
     currentLevelStr = "LEVEL 1";
     countdownTimer.start();
     
-    ofLog(OF_LOG_NOTICE, "Starting game in " + ofToString(COUNTDOWN) + " seconds");
+    ofLog(OF_LOG_NOTICE,
+          "Starting game in " + ofToString(COUNTDOWN) + " seconds");
 }
 
 //--------------------------------------------------------------
@@ -241,6 +259,9 @@ void ofApp::startGame(){
     
     ofxAddTSPSListeners(this);
     
+    // listen to any of the events for the game
+    ofAddListener(GameEvent::events, this, &ofApp::gameEvent);
+    
     ofLog(OF_LOG_NOTICE, "Game started");
 }
 
@@ -256,7 +277,16 @@ void ofApp::endGame(){
     
     ofxRemoveTSPSListeners(this);
     
+    // listen to any of the events for the game
+    ofRemoveListener(GameEvent::events, this, &ofApp::gameEvent);
+    
     ofLog(OF_LOG_NOTICE, "Game ended");
+}
+
+//--------------------------------------------------------------
+void ofApp::gameEvent(GameEvent &e) {
+    
+    e.trackCell->setState(e.cellState);
 }
 
 //--------------------------------------------------------------
@@ -317,7 +347,8 @@ void ofApp::drawCountdown(){
     ofSetColor(ofColor::whiteSmoke, 20);
     ofCircle(0, 0, COUNTDOWN_RADIUS);
     ofSetColor(ofColor::white);
-    countdownFont.drawStringCentered(ofToString(COUNTDOWN - (int)countdownTimer.getSeconds()), 0, 0);
+    string msg = ofToString(COUNTDOWN - (int)countdownTimer.getSeconds());
+    countdownFont.drawStringCentered(msg, 0, 0);
     ofPopStyle();
     ofPopMatrix();
 }
@@ -348,33 +379,28 @@ void ofApp::drawSequencer(){
     
     ofPushMatrix();
     ofTranslate(sequencerArea.getTopLeft());
-    for (int j=0; j<COLUMNS; j++) {
-        for (int i=0; i<ROWS; i++) {
+    for (int j=0; j<ROWS; j++) {
+        for (int i=0; i<COLUMNS; i++) {
             int gridIndex = i + j * COLUMNS;
             
-            float cw = sequencerArea.getWidth()/COLUMNS;
-            float ch = sequencerArea.getHeight()/ROWS;
-            float cx = i * cw;
-            float cy = j * ch;
+            cells[gridIndex].draw();
             
-            ofRectangle cellRect(cx, cy, cw, ch);
-            
-            ofPushStyle();
-            ofSetColor(ofColor::blueSteel);
-            if (currentPattern[gridIndex] == 1 || previousPattern[gridIndex] == 1){
-                
-                if (previousPattern[gridIndex] == 1){
-                    ofSetColor(ofColor::grey, 150);
-                }
-                if (currentPattern[gridIndex] == 1){
-                    ofSetColor(ofColor::grey);
-                }
-                
-            } else {
-                ofNoFill();
-            }
-            ofRect(cellRect);
-            ofPopStyle();
+//            ofPushStyle();
+//            ofSetColor(ofColor::blueSteel);
+//            if (currentPattern[gridIndex] == 1 || previousPattern[gridIndex] == 1){
+//                
+//                if (previousPattern[gridIndex] == 1){
+//                    ofSetColor(ofColor::grey, 150);
+//                }
+//                if (currentPattern[gridIndex] == 1){
+//                    ofSetColor(ofColor::grey);
+//                }
+//                
+//            } else {
+//                ofNoFill();
+//            }
+//            ofRect(cellRect);
+//            ofPopStyle();
             
         }
     }
@@ -390,18 +416,42 @@ void ofApp::sequencerPositionChanged(ofVec2f &newPos){
 //--------------------------------------------------------------
 void ofApp::sequencerWidthChanged(float &newWidth){
     sequencerArea.setWidth(newWidth);
+    
+    for (int j=0; j<ROWS; j++) {
+        for (int i=0; i<COLUMNS; i++) {
+            int gridIndex = i + j * COLUMNS;
+            
+            float cw = sequencerArea.getWidth()/COLUMNS;
+            float ch = sequencerArea.getHeight()/ROWS;
+            float cx = i * cw;
+            float cy = j * ch;
+            
+            cells[gridIndex].setBoundingBox(ofRectangle(cx, cy, cw, ch));
+        }
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::sequencerHeightChanged(float &newHeight){
     sequencerArea.setHeight(newHeight);
+    
+    for (int j=0; j<ROWS; j++) {
+        for (int i=0; i<COLUMNS; i++) {
+            int gridIndex = i + j * COLUMNS;
+            
+            float cw = sequencerArea.getWidth()/COLUMNS;
+            float ch = sequencerArea.getHeight()/ROWS;
+            float cx = i * cw;
+            float cy = j * ch;
+            
+            cells[gridIndex].setBoundingBox(ofRectangle(cx, cy, cw, ch));
+        }
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::currentThemeIdChanged(int &newId){
-    
     currentTheme = &themes[newId];
-
 }
 
 #pragma mark - Threaded Clock
@@ -457,19 +507,62 @@ int ofApp::calculateNoteDuration(){
 
 #pragma mark - OpenTSPS Listeners
 //--------------------------------------------------------------
-void ofApp::onPersonEntered(ofxTSPS::EventArgs & tspsEvent){
-	ofPoint loc = ofPoint(tspsEvent.person->centroid);
-    ofLog(OF_LOG_NOTICE, "Person entered");
+void ofApp::onPersonEntered(ofxTSPS::EventArgs &tspsEvent){
+    checkPersonInsideTrackCell(tspsEvent.person);
+//    ofLog(OF_LOG_NOTICE, "Person entered");
 }
 
 //--------------------------------------------------------------
-void ofApp::onPersonUpdated(ofxTSPS::EventArgs & tspsEvent){
-    ofPoint loc = ofPoint(tspsEvent.person->centroid);
-    ofLog(OF_LOG_NOTICE, "Person updated!");
+void ofApp::onPersonUpdated(ofxTSPS::EventArgs &tspsEvent){
+    checkPersonInsideTrackCell(tspsEvent.person);
+//    ofLog(OF_LOG_NOTICE, "Person updated!");
 }
 
 //--------------------------------------------------------------
-void ofApp::onPersonWillLeave(ofxTSPS::EventArgs & tspsEvent){
-    ofPoint loc = ofPoint(tspsEvent.person->centroid);
-	ofLog(OF_LOG_NOTICE, "Person left");
+void ofApp::onPersonWillLeave(ofxTSPS::EventArgs &tspsEvent){
+    checkPersonInsideTrackCell(tspsEvent.person);
+//    ofLog(OF_LOG_NOTICE, "Person left");
+}
+
+//--------------------------------------------------------------
+void ofApp::checkPersonInsideTrackCell(ofxTSPS::Person *person){
+    
+    ofPoint loc = ofPoint(person->centroid.x * sequencerArea.getWidth(),
+                          person->centroid.y * sequencerArea.getHeight());
+    
+    int currentStep = clock.notes;
+    
+    for (int rowIndex=0; rowIndex<ROWS; rowIndex++) {
+        for (int columnIndex=0; columnIndex<ROWS; columnIndex++) {
+            
+            int cellIndex = columnIndex + rowIndex * COLUMNS;
+            
+            ofPoint loc = ofPoint(person->centroid.x * sequencerArea.getWidth(),
+                                  person->centroid.y * sequencerArea.getHeight());
+            
+            if (cells[cellIndex].getBoundingBox().inside(loc)){
+                
+                if (rowIndex == currentStep){
+                    static GameEvent cellCatchEvent;
+                    cellCatchEvent.trackCell = &cells[cellIndex];
+                    cellCatchEvent.person = person;
+                    cellCatchEvent.cellState = cellOn;
+                    ofNotifyEvent(GameEvent::events, cellCatchEvent);
+                } else {
+                    static GameEvent cellAwaitsEvent;
+                    cellAwaitsEvent.trackCell = &cells[cellIndex];
+                    cellAwaitsEvent.person = person;
+                    cellAwaitsEvent.cellState = cellActive;
+                    ofNotifyEvent(GameEvent::events, cellAwaitsEvent);
+                }
+                
+            } else {
+                static GameEvent cellMissedEvent;
+                cellMissedEvent.trackCell = &cells[cellIndex];
+                cellMissedEvent.person = person;
+                cellMissedEvent.cellState = cellOff;
+                ofNotifyEvent(GameEvent::events, cellMissedEvent);
+            }
+        }
+    }
 }
