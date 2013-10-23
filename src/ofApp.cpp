@@ -22,6 +22,7 @@ void ofApp::setup(){
     bCountdownRunning = false;
     bGameRunning = false;
     clock.notesPerPhrase = COLUMNS;
+
     tempo = level_1_tempo;
     
     // Setup OpenTSPS
@@ -251,10 +252,12 @@ void ofApp::startGame(){
     bCountdownRunning = false;
     
     countdownTimer.stop();
+
     generateNewPattern(true);
     if (clock.isThreadRunning()){
         clock.stop();
     }
+
     clock.start(this);
     
     ofxAddTSPSListeners(this);
@@ -458,6 +461,7 @@ void ofApp::currentThemeIdChanged(int &newId){
 //--------------------------------------------------------------
 void ofApp::phraseComplete(){
     
+
     ofLog(OF_LOG_NOTICE, "Phrase Complete");
     
     int totalSteps = clock.totalNotes;
